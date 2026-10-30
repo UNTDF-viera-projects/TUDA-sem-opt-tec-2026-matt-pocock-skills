@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skills para ingeniería real · UNTDF</title>
+    <link rel="stylesheet" href="vendor/reveal/reset.css" />
+    <link rel="stylesheet" href="vendor/reveal/reveal.css" />
+    <link rel="stylesheet" href="vendor/reveal/plugin/highlight/monokai.css" />
+    <link rel="stylesheet" href="untdf.css" />
+    <link rel="stylesheet" href="matt.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- ================= APERTURA ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="Apertura">
+          <div style="margin-top: 80px">
+            <img class="portada-logo" src="assets/logo-untdf-white.svg" alt="UNTDF" />
+            <h1 style="font-size: 2.3em">Skills para ingeniería real</h1>
+            <h2 style="font-weight: 400">El flujo de trabajo de Matt Pocock con agentes</h2>
+            <p style="margin-top: 1.4em; font-size: 0.75em">
+              <span class="cmd-skill">/grill-with-docs</span> → <span class="cmd-skill">/to-spec</span> →
+              <span class="cmd-skill">/to-tickets</span> → <span class="cmd-skill">/implement</span> →
+              <span class="cmd-skill">/retro</span>
+            </p>
+            <p style="margin-top: 1.6em; font-size: 0.7em">
+              Seminario Tecnológico Optativo · Introducción al Desarrollo Asistido por Agentes<br />
+              Universidad Nacional de Tierra del Fuego, A. e I.A.S.
+            </p>
+          </div>
+          <aside class="notes">
+            Hoy cerramos el bloque SDD con un enfoque distinto: no es una herramienta que es dueña del proceso, sino un
+            conjunto de skills chicas que componemos. Al final lo aplican sobre la demo de inscripciones.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Hoja de ruta</h2>
+          <div class="ruta">
+            <div><b>1</b>De dónde venimos y qué falla<br /><small>10 min</small></div>
+            <div><b>2</b>Qué es un skill<br /><small>8 min</small></div>
+            <div><b>3</b>Cuatro ideas de fondo<br /><small>12 min</small></div>
+            <div><b>4</b>El flujo principal, paso a paso<br /><small>25 min</small></div>
+            <div><b>5</b>Beneficios y costos<br /><small>5 min</small></div>
+            <div><b>6</b>El caso: cancelar y reinscribir<br /><small>15 min</small></div>
+            <div><b>7</b>Manos a la obra<br /><small>45 min</small></div>
+            <div><b>8</b>Cierre<br /><small>5 min</small></div>
+          </div>
+          <p class="muted chico" style="margin-top: 1.2em">
+            Fuentes: <code>github.com/mattpocock/skills</code> (MIT) y <code>aihero.dev/skills</code>. Los artefactos del
+            caso están en <code>matt-skills/ejemplo/</code>.
+          </p>
+        </section>
+
+        <!-- ================= 1 · DE DÓNDE VENIMOS ================= -->
+        <section data-titulo="1 · De dónde venimos">
+          <h2>Lo que ya probamos con la misma funcionalidad</h2>
+          <div class="timeline">
+            <div class="hito"><b>01</b>Plan mode<br />+ implement</div>
+            <div class="hito"><b>02</b>Research →<br />Plan → Implement</div>
+            <div class="hito"><b>03</b>SDD manual<br />spec · plan · tasks</div>
+            <div class="hito"><b>04</b>OpenSpec<br />changes + specs vivas</div>
+            <div class="hito"><b>05</b>Spec Kit<br />constitution + /specify…</div>
+            <div class="hito destacado"><b>hoy</b>Skills<br />de Matt Pocock</div>
+          </div>
+          <div class="dos-col" style="margin-top: 0.6em">
+            <div class="tarjeta gris fragment">
+              <h3>Lo que aprendimos</h3>
+              Escribir antes de programar alinea al agente. Separar fases ayuda a revisar.
+            </div>
+            <div class="tarjeta fragment">
+              <h3>Lo que molestó</h3>
+              Mucha ceremonia, muchos documentos que nadie relee, y el proceso lo decide la herramienta.
+            </div>
+          </div>
+          <aside class="notes">
+            Preguntarles: ¿qué les molestó de OpenSpec / Spec Kit? Suelen decir: muchos archivos, prompts largos, el
+            agente escribe specs que después no se leen.
+          </aside>
+        </section>
+
+        <section>
+          <h2>La apuesta de Matt Pocock</h2>
+          <div class="cita">
+            “Approaches like GSD, BMAD, and Spec-Kit try to help by owning the process. But while doing so, they take
+            away your control and make bugs in the process hard to resolve.
+            <b>These skills are designed to be small, easy to adapt, and composable.</b>”
+            <small class="muted">— README de <code>mattpocock/skills</code></small>
+          </div>
+          <div class="dos-col" style="margin-top: 1em">
+            <div class="tarjeta gris">
+              <h3>🏭 Framework dueño del proceso</h3>
+              Un pipeline fijo. Si una fase no te sirve, peleás contra la herramienta.
+            </div>
+            <div class="tarjeta">
+              <h3>🧰 Caja de herramientas</h3>
+              Piezas chicas que se combinan. Usás la que el momento pide, y la podés editar.
+            </div>
+          </div>
+          <p class="centro muted chico fragment" style="margin-top: 0.8em">
+            “Skills for <strong>real engineers</strong> — not vibe coding.”
+          </p>
+        </section>
+
+        <section>
+          <h2>Cuatro formas en que falla trabajar con agentes</h2>
+          <div class="fallas">
+            <div class="falla fragment">
+              <span class="n">1</span>
+              <h3>No hizo lo que quería</h3>
+              <span>Desalineación: creíste que entendió y no.</span>
+              <span class="cura"><b>Cura:</b> que te <em>interrogue</em> antes de construir.<br /><span class="cmd-skill">/grill-with-docs</span></span>
+            </div>
+            <div class="falla fragment">
+              <span class="n">2</span>
+              <h3>Habla de más</h3>
+              <span>Usa 20 palabras donde alcanza 1: no conoce la jerga del proyecto.</span>
+              <span class="cura"><b>Cura:</b> un <em>lenguaje compartido</em> escrito.<br /><code>GLOSSARY.md</code></span>
+            </div>
+            <div class="falla fragment">
+              <span class="n">3</span>
+              <h3>El código no anda</h3>
+              <span>Programa a ciegas, sin feedback de lo que ejecuta.</span>
+              <span class="cura"><b>Cura:</b> loops de feedback chicos.<br /><span class="cmd-skill">/tdd</span></span>
+            </div>
+            <div class="falla fragment">
+              <span class="n">4</span>
+              <h3>Bola de barro</h3>
+              <span>El agente acelera la entropía del código.</span>
+              <span class="cura"><b>Cura:</b> cuidar el diseño todos los días.<br /><span class="cmd-skill">/codebase-design</span></span>
+            </div>
+          </div>
+          <aside class="notes">
+            Es la estructura del README de Matt: cada skill existe para curar un modo de falla concreto. Esta slide es
+            el "por qué" de toda la clase.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Nada nuevo: los clásicos tienen las respuestas</h2>
+          <div class="libros">
+            <div class="libro l1">
+              <b>The Pragmatic Programmer</b><span class="autor">Thomas &amp; Hunt</span>
+              <span class="idea">Tracer bullets · pasos chicos</span>
+            </div>
+            <div class="libro l2">
+              <b>Domain-Driven Design</b><span class="autor">Eric Evans</span>
+              <span class="idea">Lenguaje ubicuo</span>
+            </div>
+            <div class="libro l3">
+              <b>Extreme Programming Explained</b><span class="autor">Kent Beck</span>
+              <span class="idea">TDD · diseño diario</span>
+            </div>
+            <div class="libro l4">
+              <b>A Philosophy of Software Design</b><span class="autor">John Ousterhout</span>
+              <span class="idea">Módulos profundos</span>
+            </div>
+          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.8em">
+            Con agentes estas prácticas pasan de <em>recomendables</em> a <em>obligatorias</em>:<br />
+            la ventana de contexto no perdona.
+          </p>
+        </section>
+
+        <!-- ================= 2 · QUÉ ES UN SKILL ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="2 · Qué es un skill">
+          <div style="margin-top: 150px">
+            <div class="numero">2</div>
+            <h2>Qué es un skill</h2>
+            <p>Una carpeta con un <code>SKILL.md</code>. Nada más (y nada menos).</p>
+          </div>
+        </section>
+
+        <section data-sincronizar>
+          <h2>Anatomía de un skill</h2>
+          <div class="anatomia">
+            <div>
+              <span class="archivo">grilling/SKILL.md</span>
+              <pre class="envolver"><code class="markdown" data-line-numbers="1-4|2|3|6|8|12-24|28" data-incluir="referencias/skills/grilling.SKILL.md"></code></pre>
+            </div>
+            <ul class="callouts">
+              <li data-step="1" data-n="1"><b>Frontmatter</b>: metadatos que el agente ve siempre.</li>
+              <li data-step="2" data-n="2"><b>name</b>: se invoca como <span class="cmd-skill">/grilling</span>.</li>
+              <li data-step="3" data-n="3"><b>description</b>: cuándo usarlo. Es lo único que ocupa contexto hasta que hace falta.</li>
+              <li data-step="4" data-n="4"><b>Cuerpo</b>: prosa que se carga al invocarlo. Primera idea: un <b>árbol de decisiones</b>.</li>
+              <li data-step="5" data-n="5">Vocabulario propio: <b>rondas</b> y <b>frontera</b>.</li>
+              <li data-step="6" data-n="6">Formato exacto de cada ronda, con <b>recomendación</b>; “sí” la acepta.</li>
+              <li data-step="7" data-n="7">Roles: los <b>hechos</b> los busca el agente, las <b>decisiones</b> son tuyas.</li>
+            </ul>
+          </div>
+          <aside class="notes">
+            Divulgación progresiva: el agente ve solo name + description de todos los skills; el cuerpo entra al
+            contexto cuando se usa. Por eso pueden tener muchos sin pagar tokens.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Dos tipos de skill</h2>
+          <div class="dos-col">
+            <div class="tarjeta">
+              <h3>👤 Invocados por vos</h3>
+              <p><code>disable-model-invocation: true</code></p>
+              <p>Orquestan un proceso. Solo arrancan cuando escribís el comando.</p>
+              <p>
+                <span class="cmd-skill">/grill-with-docs</span> <span class="cmd-skill">/to-spec</span>
+                <span class="cmd-skill">/to-tickets</span> <span class="cmd-skill">/implement</span>
+                <span class="cmd-skill">/retro</span>
+              </p>
+            </div>
+            <div class="tarjeta gris">
+              <h3>🤖 Invocables por el modelo</h3>
+              <p>Disciplina reutilizable. El agente los usa solo cuando la tarea encaja.</p>
+              <p>
+                <span class="cmd-skill">/grilling</span> <span class="cmd-skill">/tdd</span>
+                <span class="cmd-skill">/domain-modeling</span> <span class="cmd-skill">/code-review</span>
+                <span class="cmd-skill">/prototype</span>
+              </p>
+            </div>
+          </div>
+          <div class="fragment" style="margin-top: 0.3em">
+            <span class="archivo">grill-with-docs/SKILL.md</span>
+            <pre class="chico envolver"><code class="markdown" data-incluir="referencias/skills/grill-with-docs.SKILL.md"></code></pre>
+          </div>
+          <aside class="notes">
+            Mostrar que grill-with-docs es UNA línea: compone grilling + domain-modeling. Esa es la idea de
+            "componibles": un skill de proceso arma su comportamiento con skills de disciplina.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Instalar y configurar, una vez por repo</h2>
+          <div class="terminal">
+            <div class="barra"><i></i><i></i><i></i><span>demo-inscripciones</span></div>
+            <div class="cuerpo"><div class="comentario"># copia editable de los skills en el proyecto (elegís agente y skills)</div><div class="cmd">npx skills@latest add mattpocock/skills -a opencode</div><div class="comentario fragment"># dentro del agente: configura tracker, etiquetas y docs de dominio</div><div class="cmd fragment">/setup-matt-pocock-skills</div></div>
+          </div>
+          <div class="tres-col fragment" style="margin-top: 0.4em">
+            <div class="tarjeta"><h3>Issue tracker</h3>GitHub, GitLab o <b>markdown local</b> en <code>.scratch/</code>.</div>
+            <div class="tarjeta"><h3>Etiquetas</h3><code>ready-for-agent</code>, <code>needs-info</code>… (solo si usás <span class="cmd-skill">/triage</span>).</div>
+            <div class="tarjeta"><h3>Docs de dominio</h3>Un <code>GLOSSARY.md</code> en la raíz + <code>docs/adr/</code>.</div>
+          </div>
+          <p class="muted chico fragment">El resultado es un bloque <code>## Agent skills</code> en <code>AGENTS.md</code> que apunta a <code>docs/agents/*.md</code>.</p>
+          <aside class="notes">
+            Con Claude Code también existe el plugin (claude plugin install mattpocock-skills). En clase usamos
+            OpenCode: si un comando no aparece con barra, se le pide al agente "usá el skill X".
+          </aside>
+        </section>
+
+        <!-- ================= 3 · IDEAS DE FONDO ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="3 · Ideas de fondo">
+          <div style="margin-top: 150px">
+            <div class="numero">3</div>
+            <h2>Cuatro ideas de fondo</h2>
+            <p>Smart zone · fronteras de fase · tracer bullets · módulos profundos</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>La <em style="font-style: normal">smart zone</em></h2>
+          <p class="chico">La ventana de contexto es grande, pero el modelo no razona igual de bien en toda ella.</p>
+          <div class="ventana">
+            <div class="barra">
+              <div class="smart">smart zone</div>
+              <div class="dumb">la atención se diluye: decisiones peores, se olvida de lo pactado</div>
+            </div>
+            <div class="escala"><span>0</span><span>~120–150k tokens</span><span></span><span></span><span></span><span>1M</span></div>
+          </div>
+          <div class="tres-col" style="margin-top: 1em">
+            <div class="tarjeta fragment"><h3>Consecuencia 1</h3>Tareas que <b>entren</b> en una sesión. Si no entran, se parten.</div>
+            <div class="tarjeta fragment"><h3>Consecuencia 2</h3>Lo importante se escribe en <b>archivos</b>, no se deja solo en la charla.</div>
+            <div class="tarjeta fragment"><h3>Consecuencia 3</h3>Cada ticket arranca con la ventana <b>limpia</b> (<code>/clear</code>).</div>
+          </div>
+          <aside class="notes">
+            Matt da ~120k en un artículo y ~150k en ask-matt; depende del modelo. Lo importante es la idea: la ventana
+            "útil" es mucho más chica que la anunciada.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Fuentes primarias y secundarias</h2>
+          <div class="dos-col">
+            <div class="tarjeta" style="border-top-color: var(--verde)">
+              <h3>Fuente primaria</h3>
+              La sesión tal como ocurrió: cada pregunta, cada respuesta, cada “no, así no”.
+              <ul class="checks"><li>Información completa</li></ul>
+              <ul class="checks mal"><li>Mucho ruido, poco espacio libre</li></ul>
+            </div>
+            <div class="tarjeta gris">
+              <h3>Fuente secundaria</h3>
+              Un resumen: <code>/compact</code>, un <span class="cmd-skill">/handoff</span>, una spec.
+              <ul class="checks"><li>Liviana, deja espacio</li></ul>
+              <ul class="checks mal"><li>Con pérdida: el resumen puede “aplanar” una decisión</li></ul>
+            </div>
+          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.8em">
+            Limpiar el contexto relevante te hace perder el <em>por qué</em>,<br />y leer el diff no te lo devuelve.
+          </p>
+        </section>
+
+        <section>
+          <h2>¿Qué hago al terminar una fase?</h2>
+          <p class="muted chico">Se decide <b>en la frontera</b> entre fases, nunca a la mitad. La primera respuesta “sí” gana.</p>
+          <div class="decision">
+            <div class="paso fragment"><span class="num">1</span><span>¿La próxima fase necesita esta sesión como fuente primaria, o queda smart zone?</span><span class="accion">seguir</span></div>
+            <div class="paso fragment"><span class="num">2</span><span>¿Todo lo de esta sesión es descartable para lo que sigue?</span><span class="accion">/clear</span></div>
+            <div class="paso fragment"><span class="num">3</span><span>¿Cambio de agente, de carpeta, se lo paso a alguien o abro un desvío?</span><span class="accion">/handoff</span></div>
+            <div class="paso fragment"><span class="num">4</span><span>¿Se puede hacer sin mí (AFK), por ejemplo una revisión?</span><span class="accion">subagente</span></div>
+            <div class="paso default fragment"><span class="num">5</span><span>Si no: contexto relevante, mismo agente, sigo en el loop.</span><span class="accion">/compact</span></div>
+          </div>
+          <aside class="notes">
+            De ask-matt/PHASE-BOUNDARIES.md. Ejemplo estándar: grilling → implementación es "seguir", porque la
+            implementación quiere el razonamiento literal, no un resumen.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Tracer bullets: rebanadas verticales</h2>
+          <div class="dos-col" style="gap: 2em">
+            <div>
+              <h3 class="centro">❌ Por capas</h3>
+              <div class="rebanadas horizontal">
+                <span></span><span class="tit">1</span><span class="tit">2</span><span class="tit">3</span><span class="tit">4</span><span class="tit">5</span>
+                <span class="capa">Modelo</span><span class="celda fila-1"></span><span class="celda fila-1"></span><span class="celda fila-1"></span><span class="celda fila-1"></span><span class="celda fila-1"></span>
+                <span class="capa">Servicio</span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Vista</span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Template</span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Tests</span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+              </div>
+              <p class="chico muted">Todo el modelo primero. Recién al final sabés si el camino funciona.</p>
+            </div>
+            <div class="fragment">
+              <h3 class="centro">✅ Tracer bullet</h3>
+              <div class="rebanadas">
+                <span></span><span class="tit">01</span><span class="tit">02</span><span class="tit">03</span><span class="tit">04</span><span class="tit">05</span>
+                <span class="capa">Modelo</span><span class="celda col-1"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Servicio</span><span class="celda col-1"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Vista</span><span class="celda col-1"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Template</span><span class="celda col-1"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+                <span class="capa">Tests</span><span class="celda col-1"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span><span class="celda"></span>
+              </div>
+              <p class="chico muted">Un camino angosto pero <b>completo</b>, demostrable y probado. Después la siguiente.</p>
+            </div>
+          </div>
+          <p class="centro chico fragment" style="margin-top: 0.4em">
+            El agente tiende a “correr más rápido que sus faros”: construye capas enteras a oscuras. La rebanada lo obliga a pedir feedback.
+          </p>
+        </section>
+
+        <section>
+          <h2>Módulos profundos y <em style="font-style: normal">seams</em></h2>
+          <div class="modulos">
+            <div class="modulo">
+              <div class="interfaz" style="width: 90px"></div>
+              <div class="cuerpo" style="width: 90px; height: 200px"></div>
+              <b>Profundo</b>mucho comportamiento,<br />interfaz chica
+            </div>
+            <div class="modulo">
+              <div class="interfaz" style="width: 240px"></div>
+              <div class="cuerpo" style="width: 240px; height: 40px"></div>
+              <b>Superficial</b>interfaz enorme,<br />hace poco
+            </div>
+          </div>
+          <div class="dos-col" style="margin-top: 0.8em">
+            <div class="tarjeta fragment">
+              <h3>Seam (costura)</h3>
+              La frontera pública donde se observa el comportamiento sin meterse adentro. <b>Ahí van los tests.</b>
+            </div>
+            <div class="tarjeta gris fragment">
+              <h3>En la demo</h3>
+              <code>register(student=…, activity_id=…)</code> devuelve un código. Es un seam: probamos ahí, no contra la base.
+            </div>
+          </div>
+          <aside class="notes">
+            Vocabulario de codebase-design. /to-spec pide acordar los seams antes de escribir la spec, y /tdd solo
+            escribe tests en seams acordados.
+          </aside>
+        </section>
+
+        <!-- ================= 4 · EL FLUJO PRINCIPAL ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="4 · El flujo principal">
+          <div style="margin-top: 150px">
+            <div class="numero">4</div>
+            <h2>El flujo principal: de la idea al código</h2>
+            <p>Y los desvíos que se suman a él.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>El mapa</h2>
+          <div class="mapa">
+            <span class="nodo lateral" style="grid-column: 3; grid-row: 1">prototype<small>pregunta que no se responde charlando</small></span>
+            <span class="nodo lateral" style="grid-column: 5; grid-row: 1">wayfinder<small>esfuerzo enorme y difuso</small></span>
+            <span class="nodo lateral" style="grid-column: 9; grid-row: 1">triage · diagnosing-bugs<small>bugs y pedidos que llegan</small></span>
+
+            <span class="nodo precond" style="grid-column: 1; grid-row: 2">setup<small>una vez</small></span>
+            <span class="fl" style="grid-column: 2; grid-row: 2">→</span>
+            <span class="nodo lleno" style="grid-column: 3; grid-row: 2">grill-with-docs<small>alinear</small></span>
+            <span class="fl" style="grid-column: 4; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 5; grid-row: 2">to-spec<small>destino</small></span>
+            <span class="fl" style="grid-column: 6; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 7; grid-row: 2">to-tickets<small>rebanadas</small></span>
+            <span class="fl" style="grid-column: 8; grid-row: 2">→</span>
+            <span class="bucle" style="grid-column: 9; grid-row: 2">
+              <span class="etq">× ticket</span>
+              <span class="nodo lleno">implement<small>tdd + code-review</small></span>
+            </span>
+            <span class="fl" style="grid-column: 10; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 11; grid-row: 2">retro<small>mejorar el entorno</small></span>
+
+            <span class="fl v" style="grid-column: 3; grid-row: 3">↑</span>
+            <span class="nodo salud" style="grid-column: 1 / span 4; grid-row: 3; justify-self: start">improve-codebase-architecture<small>mantenimiento: genera ideas</small></span>
+          </div>
+          <div class="tres-col chico" style="margin-top: 1em">
+            <div><b>Rojo</b>: la columna vertebral. Por acá pasa casi todo.</div>
+            <div><b style="color: var(--agente)">Violeta</b>: rampas de entrada y desvíos que vuelven al flujo.</div>
+            <div><b style="color: var(--verde)">Verde</b>: salud del código, sin feature de por medio.</div>
+          </div>
+          <aside class="notes">
+            Fuente: ask-matt/SKILL.md. Si el cambio es chico y entra en una sesión, después del grill se va directo a
+            /implement en la misma ventana. to-spec/to-tickets son para lo que no entra en una sesión.
+          </aside>
+        </section>
+
+        <!-- grill-with-docs -->
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Paso 1 · <span class="cmd-skill">/grill-with-docs</span></h2>
+          <div class="dos-col">
+            <div>
+              <p class="chico">El agente te <b>interroga</b> sobre la idea hasta que los dos entienden lo mismo.</p>
+              <ul class="chico">
+                <li class="fragment">Mapea las decisiones como un <b>árbol</b>: cada decisión abre otras.</li>
+                <li class="fragment">Pregunta en <b>rondas</b>: toda la <b>frontera</b> (lo que ya se puede preguntar) junta, numerada.</li>
+                <li class="fragment">Cada pregunta trae <b>su recomendación</b>: decir “sí” la acepta.</li>
+                <li class="fragment">Lo que se puede averiguar leyendo el código, <b>lo averigua él</b>.</li>
+              </ul>
+            </div>
+            <div class="arbol">
+              <svg viewBox="0 0 420 300" role="img" aria-label="Árbol de decisiones con frontera">
+                <g stroke="#bbb" stroke-width="3">
+                  <line x1="210" y1="40" x2="90" y2="120" /><line x1="210" y1="40" x2="210" y2="120" /><line x1="210" y1="40" x2="330" y2="120" />
+                  <line x1="90" y1="120" x2="50" y2="210" /><line x1="90" y1="120" x2="130" y2="210" />
+                  <line x1="330" y1="120" x2="300" y2="210" /><line x1="330" y1="120" x2="370" y2="210" />
+                  <line x1="130" y1="210" x2="130" y2="275" />
+                </g>
+                <circle class="n-ok" cx="210" cy="40" r="20" />
+                <circle class="n-ok" cx="90" cy="120" r="18" />
+                <circle class="n-ok" cx="330" cy="120" r="18" />
+                <circle class="n-front" cx="210" cy="120" r="18" />
+                <circle class="n-front" cx="50" cy="210" r="16" />
+                <circle class="n-front" cx="130" cy="210" r="16" />
+                <circle class="n-front" cx="300" cy="210" r="16" />
+                <circle class="n-front" cx="370" cy="210" r="16" />
+                <circle class="n-pend" cx="130" cy="275" r="14" />
+                <g font-size="15" fill="#2b2b2b">
+                  <text x="245" y="45">idea</text>
+                  <text x="0" y="290" fill="#6f6f6e">● decidido</text>
+                  <text x="150" y="290" fill="#be1c1d">● frontera (esta ronda)</text>
+                  <text x="330" y="290" fill="#999">● después</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <aside class="notes">
+            Una pregunta que depende de otra aún abierta va a una ronda posterior. Por eso es "por rondas" y no "todo
+            junto": cada respuesta mueve la frontera.
+          </aside>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>“with docs”: el rastro en papel</h2>
+          <table>
+            <thead><tr><th>Lo que se resolvió</th><th>Dónde queda</th></tr></thead>
+            <tbody>
+              <tr class="fragment"><td>Un <b>término</b>: la palabra del proyecto para una cosa</td><td><code>GLOSSARY.md</code>, en el momento en que se resuelve</td></tr>
+              <tr class="fragment"><td>Una decisión <b>difícil de revertir</b>, <b>sorprendente</b> sin contexto y fruto de un <b>trade-off real</b></td><td>Un ADR en <code>docs/adr/0001-….md</code></td></tr>
+              <tr class="fragment"><td>Todo lo demás que decidiste</td><td>⚠️ Solo en la conversación</td></tr>
+            </tbody>
+          </table>
+          <div class="dos-col fragment" style="margin-top: 0.8em">
+            <div class="tarjeta">
+              <h3>Glosario = solo vocabulario</h3>
+              Sin detalles de implementación. Ni spec, ni notas sueltas.
+            </div>
+            <div class="tarjeta alerta">
+              <h3>Por eso no se limpia</h3>
+              La tercera fila es la trampa: el grill se continúa con <span class="cmd-skill">/to-spec</span> <b>en la misma sesión</b>.
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Desvío: cuando charlar no alcanza</h2>
+          <table>
+            <thead><tr><th>Tipo de pregunta</th><th>Ejemplo</th><th>¿Se responde en el grill?</th></tr></thead>
+            <tbody>
+              <tr><td><b>Baja fidelidad</b></td><td>¿En qué URL vive la confirmación?</td><td>✅ Sí</td></tr>
+              <tr><td><b>Alta fidelidad</b></td><td>¿Cómo se siente el formulario? ¿El modelo de estados cierra?</td><td>❌ Hay que verlo</td></tr>
+            </tbody>
+          </table>
+          <div class="flujo" style="margin-top: 1em">
+            <div class="caja roja">grill<small>sesión A</small></div>
+            <div class="flecha">→<small>/handoff</small></div>
+            <div class="caja punteada">prototype<small>sesión B, código descartable</small></div>
+            <div class="flecha">→<small>/handoff</small></div>
+            <div class="caja roja">grill<small>sesión A, con la respuesta</small></div>
+          </div>
+          <p class="chico muted centro">El prototipo se guarda en una rama <code>prototype/&lt;nombre&gt;</code>: es fuente primaria. A <code>main</code> va solo la decisión.</p>
+        </section>
+
+        <!-- to-spec -->
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="aqui">to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Paso 2 · <span class="cmd-skill">/to-spec</span></h2>
+          <div class="dos-col">
+            <div>
+              <p class="chico"><b>No interroga</b>: sintetiza lo que ya se habló y lo publica en el issue tracker.</p>
+              <ol class="chico">
+                <li class="fragment">Explora el código y usa el vocabulario del glosario.</li>
+                <li class="fragment">Propone los <b>seams</b> donde se va a probar (cuanto más arriba y menos, mejor) y <b>te los confirma</b>.</li>
+                <li class="fragment">Escribe la spec con la plantilla y le pone <code>ready-for-agent</code>.</li>
+              </ol>
+            </div>
+            <div class="tarjeta">
+              <h3>Plantilla</h3>
+              <ul class="chico" style="margin-left: 0.6em">
+                <li>Problem Statement · Solution</li>
+                <li>User Stories <b>(una lista larga)</b></li>
+                <li>Implementation Decisions</li>
+                <li>Testing Decisions</li>
+                <li>Out of Scope · Further Notes</li>
+              </ul>
+              <p class="chico muted">Sin rutas de archivos ni código: envejecen rápido.</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Diferencia con OpenSpec/Spec Kit: la spec describe el destino desde el usuario; no es un documento vivo que
+            se archiva en el repo, es un issue que se cierra cuando se entrega.
+          </aside>
+        </section>
+
+        <!-- to-tickets -->
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="aqui">to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Paso 3 · <span class="cmd-skill">/to-tickets</span></h2>
+          <div class="dos-col" style="grid-template-columns: 1fr 1.1fr">
+            <div>
+              <ul class="chico">
+                <li>Cada ticket es un <b>tracer bullet</b>: atraviesa todas las capas y se puede demostrar solo.</li>
+                <li class="fragment">Cada uno entra en <b>una ventana limpia</b>.</li>
+                <li class="fragment">Declara sus <b>bloqueos</b>: qué tickets tienen que estar antes.</li>
+                <li class="fragment">Te pregunta: ¿granularidad? ¿bloqueos correctos? ¿unir o partir?</li>
+              </ul>
+            </div>
+            <div class="dag fragment">
+              <svg viewBox="0 0 460 250" role="img" aria-label="Grafo de tickets con bloqueos">
+                <defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#999" /></marker></defs>
+                <g stroke="#999" stroke-width="2.5" marker-end="url(#fl)" fill="none">
+                  <line x1="95" y1="125" x2="180" y2="50" /><line x1="95" y1="125" x2="180" y2="125" /><line x1="95" y1="125" x2="180" y2="200" />
+                  <line x1="275" y1="50" x2="355" y2="115" /><line x1="275" y1="125" x2="355" y2="125" />
+                </g>
+                <g font-size="14" font-weight="700" text-anchor="middle">
+                  <rect x="10" y="100" width="85" height="50" rx="10" fill="#be1c1d" /><text x="52" y="130" fill="#fff">01</text>
+                  <rect x="180" y="25" width="95" height="50" rx="10" fill="#fff" stroke="#6f6f6e" stroke-width="3" /><text x="227" y="55">02</text>
+                  <rect x="180" y="100" width="95" height="50" rx="10" fill="#fff" stroke="#6f6f6e" stroke-width="3" /><text x="227" y="130">03</text>
+                  <rect x="180" y="175" width="95" height="50" rx="10" fill="#fff" stroke="#6f6f6e" stroke-width="3" /><text x="227" y="205">05</text>
+                  <rect x="355" y="100" width="95" height="50" rx="10" fill="#fff" stroke="#6f6f6e" stroke-width="3" /><text x="402" y="130">04</text>
+                </g>
+                <text x="52" y="175" font-size="13" text-anchor="middle" fill="#be1c1d">frontera</text>
+                <text x="227" y="245" font-size="12" text-anchor="middle" fill="#6f6f6e">cuando 01 termina, 02 · 03 · 05 se pueden tomar en paralelo</text>
+              </svg>
+            </div>
+          </div>
+          <p class="chico muted">Tracker local: un archivo por ticket en <code>.scratch/&lt;feature&gt;/issues/NN-slug.md</code>. En GitHub o Linear, bloqueos nativos.</p>
+        </section>
+
+        <!-- implement -->
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="aqui">implement</span><i>→</i><span>retro</span></div>
+          <h2>Paso 4 · <span class="cmd-skill">/implement</span> un ticket por vez</h2>
+          <div class="anatomia mitad">
+            <div>
+              <span class="archivo">implement/SKILL.md</span>
+              <pre class="chico envolver"><code class="markdown" data-incluir="referencias/skills/implement.SKILL.md"></code></pre>
+            </div>
+            <div>
+              <ul class="chico">
+                <li><b>TDD</b> en los seams acordados.</li>
+                <li>Typecheck y tests de un archivo seguido; la suite completa una vez al final.</li>
+                <li><b>Code review</b> antes de cerrar.</li>
+                <li><b>Commit</b> en la rama actual.</li>
+              </ul>
+              <div class="tarjeta fragment" style="margin-top: 0.6em">
+                <h3><code>/clear</code> entre tickets</h3>
+                El ticket es autocontenido: el contexto del anterior es descartable.
+              </div>
+              <div class="tarjeta gris fragment" style="margin-top: 0.4em">
+                <h3><span class="cmd-skill">/implement-spec</span></h3>
+                Variante que orquesta subagentes en paralelo sobre la frontera, en una rama de integración.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="aqui">implement · tdd</span><i>→</i><span>retro</span></div>
+          <h2>Adentro de implement: <span class="cmd-skill">/tdd</span></h2>
+          <div class="flujo" style="font-size: 1.1em; margin: 0.3em 0 0.6em">
+            <div class="caja roja">🔴 Red<small>un test que falla</small></div>
+            <div class="flecha">→</div>
+            <div class="caja" style="border-color: var(--verde); color: var(--verde)">🟢 Green<small>lo mínimo para pasar</small></div>
+            <div class="flecha">→</div>
+            <div class="caja punteada">siguiente rebanada<small>un test, una implementación</small></div>
+          </div>
+          <div class="tres-col">
+            <div class="tarjeta alerta fragment"><h3>Acoplado</h3>Mockea internos o verifica consultando la base en vez de usar la interfaz. Se rompe al refactorizar.</div>
+            <div class="tarjeta alerta fragment"><h3>Tautológico</h3>Calcula el esperado igual que el código: <code>assert add(a,b) == a+b</code>. Nunca puede fallar.</div>
+            <div class="tarjeta alerta fragment"><h3>Horizontal</h3>Todos los tests primero y después todo el código: prueba un comportamiento <b>imaginado</b>.</div>
+          </div>
+          <p class="chico muted centro fragment">Refactorizar <b>no</b> es parte del loop: es trabajo de la etapa de revisión.</p>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="aqui">implement · code-review</span><i>→</i><span>retro</span></div>
+          <h2>Adentro de implement: <span class="cmd-skill">/code-review</span></h2>
+          <p class="chico">Revisa el diff contra un punto fijo, en <b>dos ejes</b> y con dos subagentes en paralelo:</p>
+          <div class="dos-col">
+            <div class="tarjeta">
+              <h3>📏 Standards</h3>
+              ¿Respeta los estándares documentados del repo?<br />
+              + una base de <i>code smells</i> de Fowler: nombre misterioso, código duplicado, generalidad especulativa…
+            </div>
+            <div class="tarjeta gris">
+              <h3>🎯 Spec</h3>
+              ¿Hace lo que pidió el issue?<br />
+              Lo que falta · lo que sobra (scope creep) · lo que parece hecho pero está mal.
+            </div>
+          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.8em">
+            No se mezclan: código prolijo que hace <em>otra cosa</em><br />no puede tapar el fallo del otro eje.
+          </p>
+        </section>
+
+        <!-- retro -->
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="hecho">implement</span><i>→</i><span class="aqui">retro</span></div>
+          <h2>Paso 5 · <span class="cmd-skill">/retro</span>: mejorar el entorno, no el código</h2>
+          <table>
+            <thead><tr><th>Si en la sesión…</th><th>…la retro propone</th></tr></thead>
+            <tbody>
+              <tr class="fragment"><td>El agente tardó en encontrar algo</td><td>Un <b>puntero de navegación</b> (AGENTS.md cortito)</td></tr>
+              <tr class="fragment"><td>Cometió un error mecánico</td><td>Un <b>chequeo automático</b>: lint, hook, job de CI</td></tr>
+              <tr class="fragment"><td>El revisor dejó pasar un error de criterio</td><td>Una regla en <code>CODING_STANDARDS.md</code></td></tr>
+              <tr class="fragment"><td>Le faltó información</td><td>Más <b>acceso</b>: logs del server, servicios de solo lectura</td></tr>
+            </tbody>
+          </table>
+          <p class="centro chico muted fragment" style="margin-top: 0.6em">El próximo build arranca de un entorno mejor. Es el loop que cierra el flujo.</p>
+        </section>
+
+        <section>
+          <h2>Higiene de contexto en todo el flujo</h2>
+          <div class="sesiones">
+            <div class="sesion">
+              <span><b>Sesión 1</b></span>
+              <div class="uso"><div class="u-grill" style="width: 30%">grill-with-docs</div><div class="u-spec" style="width: 12%">to-spec</div><div class="u-tick" style="width: 10%">to-tickets</div></div>
+            </div>
+            <div class="sesion fragment"><span><b>/clear</b> · Sesión 2</span><div class="uso"><div class="u-impl" style="width: 38%">implement 01</div></div></div>
+            <div class="sesion fragment"><span><b>/clear</b> · Sesión 3</span><div class="uso"><div class="u-impl" style="width: 30%">implement 02</div></div></div>
+            <div class="sesion fragment"><span><b>/clear</b> · Sesión 4</span><div class="uso"><div class="u-impl" style="width: 34%">implement 03</div><div class="u-grill" style="width: 10%">retro</div></div></div>
+          </div>
+          <p class="chico muted" style="margin-top: 0.3em">— — línea punteada: límite aproximado de la smart zone</p>
+          <div class="dos-col chico">
+            <div class="tarjeta">Pasos 1–3 en <b>una sola ventana</b>: la spec y los tickets se apoyan en el razonamiento literal del grill.</div>
+            <div class="tarjeta gris">Si se acerca al límite antes de <span class="cmd-skill">/to-tickets</span>: <code>/compact</code> en la frontera de fase más cercana.</div>
+          </div>
+        </section>
+
+        <!-- ================= 5 · BENEFICIOS ================= -->
+        <section data-titulo="5 · Beneficios y costos">
+          <h2>Comparado con lo que ya vimos</h2>
+          <table class="compara">
+            <thead><tr><th></th><th>Spec Kit</th><th>OpenSpec</th><th>Skills de Matt</th></tr></thead>
+            <tbody>
+              <tr><td>¿Quién define el proceso?</td><td>La herramienta (comandos fijos)</td><td>La herramienta (change → archive)</td><td class="nos">Vos, combinando piezas</td></tr>
+              <tr><td>Cómo se alinea</td><td>Plantilla de spec + clarify</td><td>Proposal + design</td><td class="nos">Interrogatorio por rondas</td></tr>
+              <tr><td>Qué perdura en el repo</td><td><code>specs/NNN-feature/</code></td><td>Specs vivas en <code>openspec/specs</code></td><td class="nos">Glosario, ADRs, tests y código</td></tr>
+              <tr><td>La spec</td><td>Documento del repo</td><td>Delta que se archiva</td><td class="nos">Issue que se cierra al entregar</td></tr>
+              <tr><td>Unidad de trabajo</td><td>Lista de tareas</td><td>Lista de tareas</td><td class="nos">Tickets verticales con bloqueos</td></tr>
+              <tr><td>Adaptarlo</td><td>Templates y scripts</td><td>Config y schemas</td><td class="nos">Editar un markdown</td></tr>
+            </tbody>
+          </table>
+          <aside class="notes">
+            No es "mejor o peor": es otra filosofía. Spec Kit y OpenSpec apuestan a la spec como fuente de verdad
+            permanente; Matt apuesta a que la verdad permanente sea el lenguaje del dominio, las decisiones difíciles y
+            los tests.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Beneficios… y costos</h2>
+          <div class="dos-col">
+            <div>
+              <h3>✅ Lo que se gana</h3>
+              <ul class="checks chico">
+                <li class="fragment"><b>Alineación</b> antes de escribir una línea.</li>
+                <li class="fragment"><b>Lenguaje compartido</b>: nombres consistentes en charla, código y tests.</li>
+                <li class="fragment"><b>Feedback chico</b>: rebanadas + TDD = menos “slop” para revisar.</li>
+                <li class="fragment"><b>Diseño</b> cuidado en cada paso, no solo al final.</li>
+                <li class="fragment"><b>Control</b>: son markdown chicos, los leés y los cambiás.</li>
+                <li class="fragment">Funciona con <b>cualquier modelo</b> y varios agentes.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>⚠️ Lo que cuesta</h3>
+              <ul class="checks mal chico">
+                <li class="fragment">Exige <b>saber planificar</b>: es una conversación, no un cuestionario pasivo.</li>
+                <li class="fragment">Lo que no es término ni ADR <b>vive solo en la charla</b>: hay que releer la spec.</li>
+                <li class="fragment">Si el agente no carga las dependencias del skill, no deja archivos.</li>
+                <li class="fragment">Sobre-interrogar también es un error: en algún momento hay que programar.</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="notes">
+            Los costos salen del artículo "9 Things People Get Wrong With /grill-me and /grill-with-docs" y de las
+            preguntas frecuentes de grill-with-docs en aihero.dev.
+          </aside>
+        </section>
+
+        <!-- ================= 6 · EL CASO ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="6 · El caso">
+          <div style="margin-top: 130px">
+            <div class="numero">6</div>
+            <h2>El caso: cancelar y reinscribir</h2>
+            <p>Misma demo de inscripciones, ahora con una idea un poco más grande.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Punto de partida: <code>demo-inscripciones</code></h2>
+          <div class="anatomia">
+            <div>
+              <span class="archivo">activities/models.py (extracto)</span>
+              <pre class="chico"><code class="python" data-line-numbers="1-12|9-12">class Registration(models.Model):
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE,
+        related_name="registrations")
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(
+            fields=["student", "activity"],
+            name="one_registration_per_student_activity")]</code></pre>
+            </div>
+            <div>
+              <ul class="chico">
+                <li>Django clásico: templates, sesión, SQLite. Usuarios <code>ana</code>, <code>bruno</code>, <code>docente</code>.</li>
+                <li><code>register()</code> devuelve un código: <code>registered</code>, <code>full</code>, <code>started</code>…</li>
+                <li>El cupo se calcula contando inscripciones.</li>
+                <li>Hoy <b>no hay cancelación</b>.</li>
+              </ul>
+              <div class="tarjeta alerta fragment" style="margin-top: 0.5em">
+                <h3>Ojo con esta restricción</h3>
+                Un estudiante, una inscripción por actividad. ¿Qué pasa al reinscribirse?
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>La idea, tal como llega</h2>
+          <div class="terminal" style="font-size: 0.75em">
+            <div class="barra"><i></i><i></i><i></i><span>opencode · demo-inscripciones</span></div>
+            <div class="cuerpo"><div class="cmd">/grill-with-docs Quiero que un estudiante pueda cancelar su inscripción y, si cambia de idea, volver a inscribirse.</div></div>
+          </div>
+          <p class="chico" style="margin-top: 1em">Una frase. Detrás hay decenas de decisiones que el prompt no dice:</p>
+          <div class="tres-col chico">
+            <div class="tarjeta fragment">¿“Cancelar” es <b>borrar</b>?</div>
+            <div class="tarjeta fragment">¿<b>Hasta cuándo</b> se puede?</div>
+            <div class="tarjeta fragment">¿Qué pasa con el <b>cupo</b>?</div>
+            <div class="tarjeta fragment">¿Y si es la inscripción <b>de otro</b>?</div>
+            <div class="tarjeta fragment">¿Reinscribirse es una inscripción <b>nueva</b>?</div>
+            <div class="tarjeta fragment">¿Y si <b>dos</b> cancelan a la vez?</div>
+          </div>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Ronda 1: la frontera es la cancelación <span class="etiqueta-ej">ilustrativo</span></h2>
+          <div class="chat">
+            <div class="preg"><span class="q">❓ Q1 · ¿Cancelar conserva la inscripción?</span> Borrar la fila pierde el historial y el admin deja de verla.<span class="rec">Sí: queda marcada como cancelada, con su fecha.</span></div>
+            <div class="preg fragment"><span class="q">❓ Q2 · ¿Solo el titular puede cancelar?</span> Hoy cualquiera autenticado ve “Mis inscripciones”, filtrado por usuario.<span class="rec">Sí: solo el titular. Ajena o inexistente: misma respuesta genérica.</span></div>
+            <div class="preg fragment"><span class="q">❓ Q3 · ¿Se puede cancelar hasta que empiece?</span><span class="rec">Sí, mientras no haya empezado.</span></div>
+            <div class="resp fragment">Q1 sí. Q2 sí. Q3 no: hasta 24 h antes del inicio, inclusive.</div>
+            <div class="doc-act fragment">📝 GLOSSARY.md: Cancelación · Titular · Plazo de cancelación</div>
+          </div>
+          <aside class="notes">
+            Notar: cada pregunta trae recomendación; "sí" la acepta. En Q3 el alumno corrige. El glosario se actualiza
+            en el momento, no al final.
+          </aside>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Ronda 2: la frontera se movió <span class="etiqueta-ej">ilustrativo</span></h2>
+          <div class="chat">
+            <div class="preg hecho-codigo"><span class="q">🔎 Hecho (lo averiguó leyendo el código)</span> <code>Registration</code> tiene una restricción única <code>(student, activity)</code>: no puede haber dos filas del mismo estudiante en la misma actividad.</div>
+            <div class="preg fragment"><span class="q">❓ Q4 · ¿Reinscribirse reactiva la misma inscripción?</span> La alternativa es una fila nueva por vez y una restricción única condicional (una sola <i>activa</i>).<span class="rec">Sí: reactivar la misma. No toca la restricción ni migra datos.</span></div>
+            <div class="preg fragment"><span class="q">❓ Q5 · ¿La reinscripción sigue las reglas de una inscripción normal?</span><span class="rec">Sí: cupo libre, actividad habilitada y sin empezar.</span></div>
+            <div class="resp fragment">Q4 sí. Q5 sí. Sin límite de ciclos por ahora.</div>
+            <div class="doc-act fragment">📝 GLOSSARY.md: Reinscripción · Inscripción activa &nbsp;·&nbsp; 📐 ADR 0001</div>
+          </div>
+          <aside class="notes">
+            Clave didáctica: Q4 solo se puede preguntar después de Q1 (si cancelar borrara, no habría nada que
+            reactivar). Eso es la frontera. Y el hecho del código no se le pregunta al humano.
+          </aside>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Lo que quedó en el repo: <code>GLOSSARY.md</code></h2>
+          <pre class="md chico"><code class="markdown" data-line-numbers="1-12|14-23|25-34|36-39" data-incluir="ejemplo/GLOSSARY.md"></code></pre>
+          <aside class="notes">
+            Señalar los _Avoid_: a partir de ahora nadie (humano o agente) dice "baja" o "borrar". Eso es lo que hace
+            que el código se llame cancel / Cancelación y no delete / unsubscribe.
+          </aside>
+        </section>
+
+        <section>
+          <div class="migas"><span class="aqui">grill-with-docs</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>…y un solo ADR</h2>
+          <span class="archivo">docs/adr/0001-reinscripcion-reactiva-la-misma-inscripcion.md</span>
+          <pre class="md bajo chico envolver"><code class="markdown" data-incluir="ejemplo/docs/adr/0001-reinscripcion-reactiva-la-misma-inscripcion.md"></code></pre>
+          <div class="tres-col chico fragment">
+            <div class="tarjeta"><b>¿Difícil de revertir?</b> Sí: cambia el esquema y los datos.</div>
+            <div class="tarjeta"><b>¿Sorprende sin contexto?</b> Sí: alguien va a querer “una fila por inscripción”.</div>
+            <div class="tarjeta"><b>¿Trade-off real?</b> Sí: historial completo vs. simplicidad.</div>
+          </div>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="aqui">to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2><span class="cmd-skill">/to-spec</span> en la misma sesión</h2>
+          <span class="archivo">.scratch/cancelar-y-reinscribir/spec.md</span>
+          <pre class="md chico envolver"><code class="markdown" data-line-numbers="1-59|15-28|30-43|45-50|52-55" data-incluir="ejemplo/.scratch/cancelar-y-reinscribir/spec.md"></code></pre>
+          <aside class="notes">
+            Antes de escribirla, el agente propone los seams: los servicios (cancel / register) y las vistas por el
+            cliente de pruebas de Django. Recorrer: historias, decisiones sin rutas, decisiones de testing, fuera de
+            alcance.
+          </aside>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="aqui">to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2><span class="cmd-skill">/to-tickets</span>: cinco rebanadas</h2>
+          <div class="dos-col" style="grid-template-columns: 1.15fr 1fr">
+            <table>
+              <thead><tr><th>#</th><th>Ticket</th><th>Bloqueado por</th></tr></thead>
+              <tbody>
+                <tr><td><b>01</b></td><td>Cancelar la propia inscripción dentro del plazo</td><td>—</td></tr>
+                <tr><td>02</td><td>Rechazos: fuera de plazo, ajena, repetida</td><td>01</td></tr>
+                <tr><td>03</td><td>Reinscribirse después de cancelar</td><td>01</td></tr>
+                <tr><td>04</td><td>Operaciones simultáneas y último cupo</td><td>02, 03</td></tr>
+                <tr><td>05</td><td>Admin y seed respetan las cancelaciones</td><td>01</td></tr>
+              </tbody>
+            </table>
+            <div class="fragment">
+              <div class="tarjeta alerta">
+                <h3>❌ Lo que <i>no</i> queremos</h3>
+                <ol class="chico" style="margin-left: 1em">
+                  <li>Modelo y migración</li>
+                  <li>Servicios</li>
+                  <li>Vistas y URLs</li>
+                  <li>Templates</li>
+                  <li>Tests</li>
+                </ol>
+                <span class="chico">Capas horizontales: nada es demostrable hasta el final.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="aqui">to-tickets</span><i>→</i><span>implement</span><i>→</i><span>retro</span></div>
+          <h2>Un ticket por dentro</h2>
+          <span class="archivo">.scratch/cancelar-y-reinscribir/issues/01-cancelar-la-propia-inscripcion.md</span>
+          <pre class="md chico envolver"><code class="markdown" data-incluir="ejemplo/.scratch/cancelar-y-reinscribir/issues/01-cancelar-la-propia-inscripcion.md"></code></pre>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="aqui">implement</span><i>→</i><span>retro</span></div>
+          <h2><code>/clear</code> y <span class="cmd-skill">/implement</span> del ticket 01</h2>
+          <div class="terminal">
+            <div class="barra"><i></i><i></i><i></i><span>opencode · demo-inscripciones</span></div>
+            <div class="cuerpo"><div class="cmd">/implement .scratch/cancelar-y-reinscribir/issues/01-cancelar-la-propia-inscripcion.md</div><div class="salida fragment">Ticket 01 · Cancelar la propia inscripción dentro del plazo
+Seams acordados: servicio de cancelación · vistas vía cliente de pruebas</div><div class="comentario fragment"># 🔴 primer test: la titular cancela y el cupo se libera</div><div class="salida fragment">FAIL test_titular_cancela_dentro_del_plazo_y_libera_cupo
+NoReverseMatch: Reverse for 'cancel_registration' not found.</div><div class="comentario fragment"># 🟢 lo mínimo: estado cancelado + servicio + vista POST</div><div class="salida fragment">Ran 1 test … OK</div><div class="comentario fragment"># …siguiente rebanada: confirmación (GET), "Mis inscripciones" muestra Cancelada…</div><div class="salida fragment">Ran 31 tests … OK   ·   makemigrations --check: sin cambios
+code-review: Standards 1 hallazgo · Spec 0 hallazgos
+[main 4f2a1c9] feat: cancelar la propia inscripción dentro del plazo</div></div>
+          </div>
+          <p class="chico muted">Salida ilustrativa: en clase la generan ustedes.</p>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="aqui">implement</span><i>→</i><span>retro</span></div>
+          <h2>El primer test, en el seam acordado <span class="etiqueta-ej">ilustrativo</span></h2>
+          <pre><code class="python" data-line-numbers="1-10|2-3|4-6|7-10">def test_titular_cancela_dentro_del_plazo_y_libera_cupo(self):
+    self.client.force_login(self.ana)
+    self.enroll()  # Ana ocupa 1 de 2 cupos
+    registration = Registration.objects.get(student=self.ana)
+    url = reverse("cancel_registration", args=[registration.pk])
+    response = self.client.post(url)
+    self.assertRedirects(response, reverse("mine"))
+    self.assertContains(self.client.get(reverse("mine")), "Cancelada")
+    available = with_availability().get(pk=self.activity.pk).available
+    self.assertEqual(available, 2)</code></pre>
+          <ul class="checks chico">
+            <li>Entra por la <b>vista</b> (HTTP con sesión) y mira lo que ve el usuario.</li>
+            <li>El cupo se verifica por la interfaz pública <code>with_availability()</code>, no leyendo columnas.</li>
+            <li>El esperado (<code>2</code>) sale del escenario, no de recalcular como lo hace el código.</li>
+          </ul>
+        </section>
+
+        <section>
+          <div class="migas"><span class="hecho">grill-with-docs</span><i>→</i><span class="hecho">to-spec</span><i>→</i><span class="hecho">to-tickets</span><i>→</i><span class="hecho">implement</span><i>→</i><span class="aqui">retro</span></div>
+          <h2>Y al terminar: <span class="cmd-skill">/retro</span> <span class="etiqueta-ej">ilustrativo</span></h2>
+          <table>
+            <thead><tr><th>Lo que pasó</th><th>Propuesta para el entorno</th></tr></thead>
+            <tbody>
+              <tr><td>El agente olvidó generar la migración y lo vio recién en el review</td><td><b>Chequeo</b>: <code>makemigrations --check</code> en un hook pre-commit</td></tr>
+              <tr><td>Tardó en encontrar dónde se calcula el cupo</td><td><b>Puntero</b> en AGENTS.md: “cupos → <code>with_availability()</code>”</td></tr>
+              <tr><td>Una vista devolvió un mensaje escrito a mano</td><td><b>Estándar</b>: los servicios devuelven códigos de <code>MESSAGES</code></td></tr>
+            </tbody>
+          </table>
+          <p class="chico muted centro" style="margin-top: 0.8em">Lo mecánico se vuelve chequeo automático; lo de criterio, estándar de código.</p>
+        </section>
+
+        <!-- ================= 7 · MANOS A LA OBRA ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="7 · Manos a la obra">
+          <div style="margin-top: 150px">
+            <div class="numero">7</div>
+            <h2>Manos a la obra</h2>
+            <p>Ahora el grill lo responden ustedes. Sus decisiones pueden ser distintas a las del ejemplo.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="mano">Consigna</h2>
+          <div class="practica">
+            <div class="p"><span class="num">0</span><span>Copia nueva de <code>demo-inscripciones</code>, <code>git init</code> y commit de la base. Que los tests pasen.</span><span class="t">5'</span></div>
+            <div class="p"><span class="num">1</span><span><code>npx skills@latest add mattpocock/skills -a opencode</code> y <span class="cmd-skill">/setup-matt-pocock-skills</span>: tracker <b>local</b>, un solo contexto.</span><span class="t">5'</span></div>
+            <div class="p"><span class="num">2</span><span><span class="cmd-skill">/grill-with-docs</span> con la idea de cancelar y reinscribir. Respondan, corrijan, <b>decidan</b>.</span><span class="t">15'</span></div>
+            <div class="p"><span class="num">3</span><span>Sin limpiar: <span class="cmd-skill">/to-spec</span> y <span class="cmd-skill">/to-tickets</span>. Discutan granularidad y bloqueos antes de aceptar.</span><span class="t">10'</span></div>
+            <div class="p"><span class="num">4</span><span><code>/clear</code> → <span class="cmd-skill">/implement</span> ticket 01. Lean el test rojo <b>antes</b> de que pase a verde.</span><span class="t">10'</span></div>
+            <div class="p"><span class="num">5</span><span>Si da el tiempo: <code>/clear</code> → ticket de reinscripción. Cierren con <span class="cmd-skill">/retro</span>.</span><span class="t">resto</span></div>
+          </div>
+          <p class="chico muted" style="margin-top: 0.6em">
+            En OpenCode, si un comando no aparece con <code>/</code>, pídanlo: <i>“usá el skill grill-with-docs”</i>.
+          </p>
+          <aside class="notes">
+            Tiempos para ~45 min. Si alguien ya hizo F1 en clases anteriores, que arranque igual desde la base: la idea
+            es comparar el proceso, no reutilizar el código.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Cómo saber que va bien</h2>
+          <div class="dos-col">
+            <div>
+              <h3>✅ Funciona si…</h3>
+              <ul class="checks chico">
+                <li><code>GLOSSARY.md</code> cambia <b>durante</b> el grill, término por término.</li>
+                <li>El glosario es puro vocabulario: cero detalles de implementación.</li>
+                <li>Lo que está en el código <b>no te lo pregunta</b>: lo lee.</li>
+                <li>Hay pocos ADR (o ninguno), y son decisiones que no querrías volver a discutir.</li>
+                <li>Cada ticket termina con tests verdes y un commit.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>🚩 Señales de alarma</h3>
+              <ul class="checks mal chico">
+                <li>Te hizo todas las preguntas juntas y sin recomendaciones: no cargó <span class="cmd-skill">/grilling</span>.</li>
+                <li>Interrogatorio pero sin archivos: no cargó <span class="cmd-skill">/domain-modeling</span>.</li>
+                <li>Tickets por capas (“modelo”, “vistas”, “tests”).</li>
+                <li>Hiciste <code>/clear</code> antes de <span class="cmd-skill">/to-spec</span>.</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="notes">
+            Si sospechan que un skill no se cargó, que le pregunten directamente al agente qué skills cargó.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Qué entregar</h2>
+          <div class="tres-col">
+            <div class="tarjeta"><h3>📚 Dominio</h3><code>GLOSSARY.md</code> y, si hubo, <code>docs/adr/</code>.</div>
+            <div class="tarjeta"><h3>🎫 Plan</h3><code>.scratch/&lt;feature&gt;/</code>: la spec y los tickets con sus bloqueos.</div>
+            <div class="tarjeta"><h3>🧪 Código</h3>Un commit por ticket, con sus tests.</div>
+          </div>
+          <div class="tarjeta gris" style="margin-top: 0.8em">
+            <h3>💬 Reflexión (3–5 líneas)</h3>
+            ¿Qué decisión tomaron <b>distinto</b> al ejemplo (o a lo que hicieron con OpenSpec / Spec Kit)?
+            ¿Qué pregunta del grill no se les había ocurrido? ¿Qué propuso la retro?
+          </div>
+          <p class="chico muted" style="margin-top: 0.6em">Referencia completa del ejemplo docente: <code>matt-skills/ejemplo/</code>.</p>
+        </section>
+
+        <!-- ================= CIERRE ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="Cierre">
+          <div style="margin-top: 110px">
+            <p class="frase" style="color: #fff; font-size: 1.6em">
+              Los agentes no reemplazan los fundamentos.<br />Los vuelven <u>obligatorios</u>.
+            </p>
+            <div class="dos-col" style="margin-top: 1.4em; font-size: 0.7em">
+              <div>
+                <b>Para seguir</b><br />
+                <code>github.com/mattpocock/skills</code><br />
+                <code>aihero.dev/skills</code> · <span class="cmd-skill">/ask-matt</span> si no sabés qué skill usar
+              </div>
+              <div>
+                <b>Para leer</b><br />
+                “My 7 Phases of AI Development”<br />
+                “Tracer Bullets: Keeping AI Slop Under Control”
+              </div>
+            </div>
+            <h2 style="margin-top: 1em">¿Preguntas?</h2>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="pie">
+      <img src="assets/logo-untdf.svg" alt="UNTDF" />
+      <span class="seccion-actual"></span>
+    </footer>
+
+    <script src="vendor/reveal/reveal.js"></script>
+    <script src="vendor/reveal/plugin/highlight.js"></script>
+    <script src="vendor/reveal/plugin/notes.js"></script>
+    <script src="vendor/reveal/plugin/zoom.js"></script>
+    <script>
+      Reveal.initialize({
+        width: 1280,
+        height: 720,
+        margin: 0.05,
+        center: false,
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes, RevealZoom],
+      })
+
+      // Callouts sincronizados con el paso actual del código
+      function sincronizar() {
+        const slide = Reveal.getCurrentSlide()
+        if (!slide || !slide.hasAttribute('data-sincronizar')) return
+        slide.querySelectorAll('.anatomia').forEach((grupo) => {
+          const pre = grupo.querySelector('pre code[data-line-numbers]')?.parentElement
+          if (!pre) return
+          const paso = pre.querySelectorAll('code.fragment.visible').length
+          grupo.querySelectorAll('.callouts li[data-step]').forEach((li) => {
+            const n = Number(li.dataset.step)
+            li.classList.toggle('activo', n === paso)
+            li.classList.toggle('visto', n < paso)
+          })
+        })
+      }
+
+      // Nombre de la sección actual en el pie
+      function actualizarPie() {
+        const actual = Reveal.getIndices().h
+        let titulo = ''
+        document.querySelectorAll('.reveal .slides > section').forEach((s, i) => {
+          if (i <= actual && s.dataset.titulo) titulo = s.dataset.titulo
+        })
+        document.querySelector('.pie .seccion-actual').textContent = 'Skills para ingeniería real · ' + titulo
+      }
+
+      ;['ready', 'slidechanged', 'fragmentshown', 'fragmenthidden'].forEach((evento) =>
+        Reveal.on(evento, () => {
+          sincronizar()
+          actualizarPie()
+        }),
+      )
+    </script>
+  </body>
+</html>

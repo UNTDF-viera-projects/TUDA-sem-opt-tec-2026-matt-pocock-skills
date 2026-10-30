@@ -1,0 +1,145 @@
+from datetime import timedelta
+from unittest.mock import Mock, patch
+from django.test import Client
+from django.utils import timezone
+from activities.models import Registration
+from activities.services import register
+from .support import NOW, BaseCase, activity, freeze_view_clock
+
+class ViewTests(BaseCase):
+    def test_session_login_and_logout_post(self):
+        self.assertRedirects(self.client.get("/activities/"), "/accounts/login/?next=/activities/")
+        response=self.client.post("/accounts/login/?next=/activities/", {"username":"ana","password":"test-pass","next":"/activities/"})
+        self.assertRedirects(response, "/activities/")
+        self.assertEqual(self.client.get("/accounts/logout/").status_code, 405)
+        self.assertRedirects(self.client.post("/accounts/logout/"), "/accounts/login/")
+    def test_csrf_and_no_get_mutation(self):
+        client=Client(enforce_csrf_checks=True);client.force_login(self.ana)
+        url=f"/activities/{self.activity.pk}/register/"
+        self.assertEqual(client.get(url).status_code, 405)
+        self.assertEqual(client.post(url).status_code, 403)
+        page=client.get(f"/activities/{self.activity.pk}/")
+        self.assertEqual(page.status_code, 200)
+        with patch("activities.views.register", side_effect=lambda **kwargs: register(now=NOW, **kwargs)):
+            response=client.post(url, {"csrfmiddlewaretoken":client.cookies['csrftoken'].value,"student":self.bruno.pk})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(Registration.objects.get().student,self.ana)
+    def test_cancel_is_post_only_with_csrf_and_uses_session_identity(self):
+        self.enroll()
+        self.activity.starts_at=timezone.now()+timedelta(hours=48);self.activity.save()
+        client=Client(enforce_csrf_checks=True);client.force_login(self.ana)
+        url=f"/activities/{self.activity.pk}/cancel/"
+        self.assertEqual(client.get(url).status_code,405)
+        self.assertEqual(client.post(url).status_code,403)
+        client.get(f"/activities/{self.activity.pk}/")
+        response=client.post(url,{"csrfmiddlewaretoken":client.cookies['csrftoken'].value,"student":self.bruno.pk})
+        self.assertRedirects(response,f"/activities/{self.activity.pk}/")
+        registration=Registration.objects.get()
+        self.assertEqual(registration.student,self.ana)
+        self.assertContains(client.get(f"/activities/{self.activity.pk}/"),"Inscripción cancelada")
+        self.assertContains(client.get("/activities/"),"2 cupos disponibles")
+    def test_detail_cancel_states(self):
+        self.client.force_login(self.ana);self.enroll()
+        def page():
+            with freeze_view_clock(self.client,NOW):
+                return self.client.get(f"/activities/{self.activity.pk}/")
+        self.assertContains(page(),"Cancelar inscripción")
+        self.activity.starts_at=NOW+timedelta(hours=2);self.activity.save()
+        response=page()
+        self.assertNotContains(response,"Cancelar inscripción");self.assertContains(response,"hasta 24 horas antes del inicio")
+        self.activity.starts_at=NOW+timedelta(hours=48);self.activity.save()
+        self.assertEqual(self.cancel(),"cancelled")
+        self.assertEqual(self.cancel(now=NOW+timedelta(hours=1)),"already_cancelled")
+        response=page()
+        self.assertContains(response,"Inscripción cancelada el 01/10/2030 09:00")
+        self.assertNotContains(response,"Cancelar inscripción");self.assertNotContains(response,"Inscribirme")
+    def test_reregistration_over_cancelled_explains_and_creates_no_row(self):
+        self.client.force_login(self.ana); self.enroll(); self.cancel()
+        with freeze_view_clock(self.client, NOW):
+            page=self.client.get(f"/activities/{self.activity.pk}/")
+            response=self.client.post(f"/activities/{self.activity.pk}/register/", follow=True)
+        self.assertContains(page,"No podés volver a inscribirte en esta actividad.")
+        self.assertNotContains(page,"Inscribirme")
+        self.assertContains(response,"Cancelaste tu inscripción; no podés volver a inscribirte.")
+        self.assertNotContains(response,"Ya estás inscripto")
+        self.assertEqual(Registration.objects.count(),1)
+    def test_http_reregistration_blocked_when_full_disabled_or_started(self):
+        self.client.force_login(self.ana)
+        configurations={"llena":dict(capacity=1),"deshabilitada":dict(is_active=False),"iniciada":dict(starts_at=timezone.now()-timedelta(hours=1))}
+        for name,config in configurations.items():
+            with self.subTest(name):
+                target=activity(title=name,**config)
+                Registration.objects.create(student=self.ana,activity=target,cancelled_at=NOW)
+                if name=="llena": Registration.objects.create(student=self.bruno,activity=target)
+                before=Registration.objects.count()
+                response=self.client.post(f"/activities/{target.pk}/register/",follow=True)
+                self.assertContains(response,"Cancelaste tu inscripción; no podés volver a inscribirte.")
+                self.assertEqual(Registration.objects.count(),before)
+    def test_catalog_filters_and_full_visible(self):
+        self.client.force_login(self.ana)
+        full=activity(title="Completa",capacity=1)
+        Registration.objects.create(student=self.ana,activity=full)
+        activity(title="Oculta",is_active=False); activity(title="Pasada",starts_at=NOW-timedelta(hours=2))
+        with freeze_view_clock(self.client,NOW): response=self.client.get("/activities/")
+        self.assertContains(response,"Completa");self.assertNotContains(response,"Oculta");self.assertNotContains(response,"Pasada")
+    def test_catalog_orders_by_start_time(self):
+        self.client.force_login(self.ana)
+        early=NOW+timedelta(days=1,hours=-3)    # 02/10 09:00
+        late=NOW+timedelta(days=1,hours=6)      # 02/10 18:00
+        next_day=NOW+timedelta(days=3,hours=-2) # 04/10 10:00
+        # Creadas al revés: el orden de inserción no debe filtrarse a la página.
+        activity(title="Domingo",starts_at=next_day)
+        activity(title="Tarde",starts_at=late)
+        activity(title="Mañana",starts_at=early)
+        html=self.client.get("/activities/").content.decode()
+        self.assertLess(html.index("Mañana"),html.index("Tarde"))
+        self.assertLess(html.index("Tarde"),html.index("Domingo"))
+    def test_mine_shows_each_cancellation_state(self):
+        self.client.force_login(self.ana); self.enroll()
+        def page():
+            with freeze_view_clock(self.client, NOW):
+                return self.client.get("/my-registrations/")
+        response=page()
+        self.assertContains(response,"Cancelar inscripción");self.assertContains(response,"confirm('¿Cancelar tu inscripción?")
+        self.activity.starts_at=NOW+timedelta(hours=2);self.activity.save()
+        self.assertNotContains(page(),"Cancelar inscripción")
+        self.activity.starts_at=NOW+timedelta(hours=48);self.activity.save()
+        self.assertEqual(self.cancel(),"cancelled")
+        response=page()
+        self.assertContains(response,"Inscripción cancelada el 01/10/2030 09:00")
+        self.assertNotContains(response,"Cancelar inscripción")
+    def test_mine_evaluates_the_window_at_a_single_instant(self):
+        self.client.force_login(self.ana)
+        for title in ("Taller","Clínica"):
+            edge=activity(title=title,starts_at=NOW+timedelta(hours=24))
+            Registration.objects.create(student=self.ana,activity=edge)
+        session=self.client.session
+        session.set_expiry(NOW+timedelta(days=100))
+        session.save()
+        # La primera lectura ve el borde abierto; la segunda, tres horas después, lo ve cerrado.
+        # Se reemplaza el reloj de la vista (no el módulo compartido) porque la carga de
+        # sesión también lee el reloj real y consumiría el primer valor.
+        clock=Mock(); clock.now.side_effect=[NOW, NOW+timedelta(hours=3)]
+        with patch("activities.views.timezone", clock):
+            response=self.client.get("/my-registrations/")
+        self.assertContains(response,"Cancelar inscripción",count=2)
+    def test_mine_isolated_between_students_including_cancelled(self):
+        self.enroll(); other=activity(title="Cancelada de Bruno")
+        Registration.objects.create(student=self.bruno,activity=other,cancelled_at=NOW)
+        self.assertEqual(self.cancel(),"cancelled")
+        self.client.force_login(self.ana)
+        with freeze_view_clock(self.client,NOW): response=self.client.get("/my-registrations/")
+        self.assertContains(response,"Inscripción cancelada el 01/10/2030 09:00")
+        self.assertNotContains(response,"Cancelada de Bruno")
+    def test_cancel_from_mine_lands_on_detail_with_message(self):
+        self.client.force_login(self.ana); self.enroll()
+        with freeze_view_clock(self.client,NOW):
+            response=self.client.post(f"/activities/{self.activity.pk}/cancel/",follow=True)
+            self.assertRedirects(response,f"/activities/{self.activity.pk}/")
+            self.assertContains(response,"Inscripción cancelada. El cupo quedó liberado.")
+            self.assertEqual(Registration.objects.get().cancelled_at,NOW)
+    def test_mine_isolated_and_retains_past_disabled(self):
+        self.enroll(); other=activity(title="Privada Bruno");Registration.objects.create(student=self.bruno,activity=other)
+        self.activity.is_active=False;self.activity.starts_at=NOW-timedelta(hours=2);self.activity.save()
+        self.client.force_login(self.ana); response=self.client.get("/my-registrations/")
+        self.assertContains(response,"Práctica");self.assertNotContains(response,"Privada Bruno")

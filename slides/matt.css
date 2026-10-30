@@ -1,0 +1,625 @@
+/* Componentes propios de la clase de skills (se suman a untdf.css) */
+:root {
+  --agente: #5b3fb5;
+  --agente-suave: #efeafb;
+  --verde: #0f875b;
+  --verde-suave: #e3f4ec;
+  --amarillo: #e4b919;
+  --r-main-font-size: 36px;
+}
+
+.reveal {
+  font-size: var(--r-main-font-size);
+}
+
+/* ---------- Migas: dónde estamos en el flujo principal ---------- */
+.migas {
+  display: flex;
+  gap: 0.35em;
+  align-items: center;
+  margin: -0.3em 0 0.7em;
+  font-family: var(--r-code-font);
+  font-size: 0.42em;
+  color: #aaa;
+}
+
+.migas span {
+  padding: 0.2em 0.6em;
+  border-radius: 99px;
+  background: var(--fondo-suave);
+}
+
+.migas i {
+  font-style: normal;
+}
+
+.migas span.aqui {
+  background: var(--untdf-rojo);
+  color: #fff;
+  font-weight: 700;
+}
+
+.migas span.hecho {
+  color: var(--texto);
+}
+
+/* ---------- Slash command como "pastilla" ---------- */
+.cmd-skill {
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  border-radius: 6px;
+  background: var(--agente-suave);
+  color: var(--agente);
+  font-family: var(--r-code-font);
+  font-weight: 700;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.reveal section.seccion .cmd-skill {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* ---------- Mapa del flujo principal ---------- */
+.mapa {
+  display: grid;
+  grid-template-columns: repeat(11, auto);
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em 0.3em;
+  margin-top: 0.6em;
+}
+
+.mapa .nodo {
+  padding: 0.5em 0.6em;
+  border-radius: 10px;
+  border: 3px solid var(--untdf-gris);
+  background: #fff;
+  font-family: var(--r-code-font);
+  font-weight: 700;
+  font-size: 0.56em;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.mapa .nodo small {
+  display: block;
+  font-family: var(--r-main-font);
+  font-weight: 400;
+  font-size: 0.82em;
+  color: var(--untdf-gris);
+}
+
+.mapa .nodo.principal {
+  border-color: var(--untdf-rojo);
+}
+
+.mapa .nodo.lleno {
+  background: var(--untdf-rojo);
+  border-color: var(--untdf-rojo);
+  color: #fff;
+}
+
+.mapa .nodo.lleno small {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mapa .nodo.lateral {
+  border-style: dashed;
+  border-color: var(--agente);
+  color: var(--agente);
+}
+
+.mapa .nodo.salud {
+  border-style: dashed;
+  border-color: var(--verde);
+  color: var(--verde);
+}
+
+.mapa .nodo.precond {
+  border-style: dotted;
+}
+
+.mapa .fl {
+  color: var(--untdf-gris);
+  font-weight: 800;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.mapa .fl.v {
+  font-size: 0.7em;
+}
+
+.mapa .bucle {
+  padding: 0.45em;
+  border: 3px dashed var(--untdf-rojo);
+  border-radius: 14px;
+  display: flex;
+  gap: 0.3em;
+  align-items: center;
+}
+
+.mapa .bucle .etq {
+  font-size: 0.4em;
+  color: var(--untdf-rojo);
+  font-weight: 700;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ---------- Modos de falla ---------- */
+.fallas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6em;
+}
+
+.falla {
+  padding: 0.7em 0.8em;
+  border-radius: 12px;
+  background: var(--fondo-suave);
+  font-size: 0.68em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+}
+
+.falla .n {
+  font-size: 2.2em;
+  font-weight: 900;
+  color: var(--untdf-rojo);
+  line-height: 1;
+}
+
+.falla h3 {
+  font-size: 1.15em !important;
+  margin: 0 !important;
+  color: var(--texto) !important;
+}
+
+.falla .cura {
+  margin-top: auto;
+  padding-top: 0.5em;
+  border-top: 2px solid #ddd;
+}
+
+.falla .cura b {
+  color: var(--verde);
+}
+
+/* ---------- Libros (los clásicos) ---------- */
+.libros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8em;
+  margin-top: 0.5em;
+}
+
+.libro {
+  aspect-ratio: 3 / 4;
+  border-radius: 6px 14px 14px 6px;
+  padding: 0.8em 0.8em 0.8em 1.2em;
+  color: #fff;
+  font-size: 0.55em;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 10px 0 0 rgba(0, 0, 0, 0.18), 0 10px 22px rgba(0, 0, 0, 0.2);
+}
+
+.libro b {
+  font-size: 1.45em;
+  line-height: 1.15;
+}
+
+.libro .autor {
+  opacity: 0.85;
+  margin-top: 0.4em;
+}
+
+.libro .idea {
+  margin-top: auto;
+  padding: 0.45em 0.55em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--texto);
+  font-weight: 700;
+}
+
+.libro.l1 { background: #7a3b1f; }
+.libro.l2 { background: #2d5d7b; }
+.libro.l3 { background: #4b6b2a; }
+.libro.l4 { background: #5b3fb5; }
+
+/* ---------- Ventana de contexto ---------- */
+.ventana {
+  margin: 1em 0 0.4em;
+}
+
+.ventana .barra {
+  display: flex;
+  height: 2.2em;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.6em;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ventana .barra div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ventana .smart { background: var(--verde); flex: 0 0 15%; }
+.ventana .dumb { background: repeating-linear-gradient(45deg, #b33, #b33 12px, #c44 12px, #c44 24px); flex: 1; }
+
+.ventana .escala {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--r-code-font);
+  font-size: 0.42em;
+  color: var(--untdf-gris);
+  margin-top: 0.3em;
+}
+
+/* Sesiones como barras de llenado */
+.sesiones {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.6em;
+}
+
+.sesion {
+  display: grid;
+  grid-template-columns: 9em 1fr;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.sesion .uso {
+  height: 1.8em;
+  border-radius: 6px;
+  background: #eee;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+.sesion .uso div {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5em;
+  color: #fff;
+  font-family: var(--r-code-font);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.sesion .uso::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 60%;
+  border-left: 3px dashed #b33;
+}
+
+.u-grill { background: var(--agente); }
+.u-spec { background: #8065d0; }
+.u-tick { background: #a28fe0; }
+.u-impl { background: var(--untdf-rojo); }
+
+/* ---------- Árbol de decisiones del interrogatorio ---------- */
+.arbol svg {
+  width: 100%;
+  height: auto;
+}
+
+.arbol .n-ok { fill: var(--verde); }
+.arbol .n-front { fill: var(--untdf-rojo); }
+.arbol .n-pend { fill: #cfcfcf; }
+
+/* ---------- Conversación (grilling) ---------- */
+.chat {
+  display: grid;
+  gap: 0.45em;
+  font-size: 0.64em;
+}
+
+.preg {
+  padding: 0.55em 0.8em;
+  border-radius: 12px 12px 12px 4px;
+  background: var(--agente-suave);
+  border-left: 5px solid var(--agente);
+}
+
+.preg .q {
+  font-weight: 800;
+  color: var(--agente);
+}
+
+.preg .rec {
+  display: block;
+  margin-top: 0.3em;
+  color: var(--texto);
+}
+
+.preg .rec::before {
+  content: '➡️ ';
+}
+
+.preg.hecho-codigo {
+  background: #fff7e0;
+  border-left-color: var(--amarillo);
+}
+
+.preg.hecho-codigo .q {
+  color: #8a6d00;
+}
+
+.resp {
+  justify-self: end;
+  max-width: 75%;
+  padding: 0.55em 0.8em;
+  border-radius: 12px 12px 4px 12px;
+  background: var(--untdf-rojo);
+  color: #fff;
+  font-family: var(--r-code-font);
+  font-size: 0.95em;
+}
+
+.doc-act {
+  justify-self: center;
+  padding: 0.3em 0.9em;
+  border-radius: 99px;
+  background: var(--verde-suave);
+  color: var(--verde);
+  font-weight: 700;
+}
+
+/* ---------- Capas horizontales vs. rebanadas verticales ---------- */
+.rebanadas {
+  display: grid;
+  grid-template-columns: 7em repeat(5, 1fr);
+  gap: 5px;
+  font-size: 0.56em;
+}
+
+.rebanadas .capa {
+  font-weight: 700;
+  color: var(--untdf-gris);
+  display: flex;
+  align-items: center;
+}
+
+.rebanadas .celda {
+  height: 2.1em;
+  border-radius: 5px;
+  background: #e9e9e9;
+}
+
+.rebanadas.horizontal .fila-1 { background: var(--untdf-gris); }
+
+.rebanadas .col-1 {
+  background: var(--untdf-rojo);
+}
+
+.rebanadas .tit {
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ---------- Grafo de tickets ---------- */
+.dag svg {
+  width: 100%;
+  height: auto;
+  font-family: var(--r-main-font);
+}
+
+/* ---------- Módulo profundo vs. superficial ---------- */
+.modulos {
+  display: flex;
+  gap: 3em;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.modulo {
+  text-align: center;
+  font-size: 0.55em;
+}
+
+.modulo .interfaz {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--untdf-rojo);
+  margin: 0 auto 4px;
+}
+
+.modulo .cuerpo {
+  margin: 0 auto;
+  border-radius: 6px;
+  background: var(--untdf-gris);
+}
+
+.modulo b {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 1.2em;
+}
+
+/* ---------- Árbol de fronteras de fase ---------- */
+.decision {
+  display: grid;
+  gap: 0.35em;
+  font-size: 0.66em;
+}
+
+.decision .paso {
+  display: grid;
+  grid-template-columns: 2em 1fr 9em;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.4em 0.6em;
+  border-radius: 10px;
+  background: var(--fondo-suave);
+}
+
+.decision .paso .num {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: var(--untdf-gris);
+  color: #fff;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.decision .paso .accion {
+  font-family: var(--r-code-font);
+  font-weight: 700;
+  color: var(--untdf-rojo);
+  text-align: right;
+}
+
+.decision .paso.default {
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--untdf-rojo);
+}
+
+/* ---------- Comparación de enfoques ---------- */
+.reveal table.compara td:first-child {
+  font-weight: 700;
+  color: var(--untdf-gris);
+  white-space: nowrap;
+}
+
+.reveal table.compara td.nos {
+  background: #fbeeee !important;
+}
+
+.reveal table.compara th:last-child {
+  background: var(--untdf-rojo-osc);
+}
+
+/* ---------- Pasos de la práctica ---------- */
+.practica {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em 0.9em;
+  font-size: 0.62em;
+}
+
+.practica .p {
+  display: grid;
+  grid-template-columns: 2.1em 1fr auto;
+  gap: 0.6em;
+  align-items: start;
+  padding: 0.5em 0.7em;
+  border-radius: 10px;
+  background: var(--fondo-suave);
+}
+
+.practica .p .num {
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  background: var(--untdf-rojo);
+  color: #fff;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.practica .p .t {
+  font-family: var(--r-code-font);
+  font-size: 0.85em;
+  color: var(--untdf-gris);
+  white-space: nowrap;
+}
+
+/* ---------- Chequeos (se sabe que funciona si...) ---------- */
+.checks {
+  list-style: none;
+  margin: 0.3em 0 0 !important;
+  padding: 0;
+}
+
+.checks li {
+  position: relative;
+  padding-left: 1.6em;
+}
+
+.checks li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--verde);
+  font-weight: 900;
+}
+
+.checks.mal li::before {
+  content: '✗';
+  color: var(--untdf-rojo);
+}
+
+/* ---------- Código más compacto para artefactos markdown ---------- */
+.reveal pre.md code {
+  max-height: 470px;
+}
+
+.reveal pre.md.bajo code {
+  max-height: 400px;
+}
+
+.etiqueta-ej {
+  display: inline-block;
+  margin-left: 0.6em;
+  padding: 0.1em 0.6em;
+  border-radius: 99px;
+  background: var(--amarillo);
+  color: #3a2f00;
+  font-size: 0.4em;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.cita {
+  padding: 0.6em 1em;
+  border-left: 6px solid var(--untdf-rojo);
+  background: var(--fondo-suave);
+  border-radius: 0 12px 12px 0;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+.cita small {
+  display: block;
+  margin-top: 0.4em;
+  font-style: normal;
+}
+
+/* Código largo en prosa (SKILL.md): que envuelva en vez de cortarse */
+.reveal pre.envolver code {
+  white-space: pre-wrap;
+  max-height: 520px;
+}
+
+.reveal pre.envolver .hljs-ln-code {
+  white-space: pre-wrap;
+}
+
+/* Alturas máximas pensadas para base de 36px: el código nunca pisa el pie */
+.reveal pre code { max-height: 450px; }
+.reveal pre.envolver code { max-height: 440px; }
+.reveal pre.md code { max-height: 430px; }
+.reveal pre.md.bajo code { max-height: 400px; }
+.reveal .anatomia pre.envolver code { max-height: 480px; }
+.callouts { font-size: 0.56em; }
+.anatomia.mitad > div:first-child pre.envolver code { max-height: 440px; }
+.practica { font-size: 0.68em; }

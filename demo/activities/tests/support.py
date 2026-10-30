@@ -29,7 +29,8 @@ def login_teacher(client):
     return teacher
 
 def activity(**kwargs):
-    values = dict(title="Práctica", description="Datos de prueba", starts_at=NOW+timedelta(hours=48), capacity=2)
+    responsible, _ = get_user_model().objects.get_or_create(username="responsable-test", defaults={"is_staff": True})
+    values = dict(responsible=responsible, title="Práctica", description="Datos de prueba", starts_at=NOW+timedelta(hours=48), capacity=2)
     values.update(kwargs)
     return Activity.objects.create(**values)
 

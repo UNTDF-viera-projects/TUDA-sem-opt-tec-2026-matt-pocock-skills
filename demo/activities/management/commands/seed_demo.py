@@ -28,13 +28,17 @@ class Command(BaseCommand):
         reference = seed.reference_time
         User = get_user_model()
         users = {}
-        for username in ["ana", "bruno", "docente"]:
+        for username in ["ana", "bruno", "docente", "docente1", "docente2"]:
             user, created = User.objects.get_or_create(username=username)
             if created:
                 user.set_password(PASSWORD)
-                user.is_staff = user.is_superuser = username == "docente"
+                user.is_staff = username in {"docente", "docente1", "docente2"}
+                user.is_superuser = username == "docente"
                 user.save()
             users[username] = user
+        for username in ("docente1", "docente2"):
+            if not users[username].is_staff:
+                raise CommandError(f"La cuenta {username} existente no es staff; se conservó sin cambios.")
         scenarios = [
             ("taller", "Taller de agentes", 48, 4, True),
             ("proxima", "Clínica de Django", 12, 3, True),
@@ -43,8 +47,8 @@ class Command(BaseCommand):
             ("iniciada", "Actividad ya iniciada", -2, 3, True),
         ]
         activities = {}
-        for key, title, hours, capacity, active in scenarios:
-            activity, _ = Activity.objects.get_or_create(seed_key=key, defaults={"title": title, "description": "Actividad ficticia para practicar el desarrollo asistido por agentes en la UNTDF.", "starts_at": reference + timedelta(hours=hours), "capacity": capacity, "is_active": active})
+        for index, (key, title, hours, capacity, active) in enumerate(scenarios):
+            activity, _ = Activity.objects.get_or_create(seed_key=key, defaults={"responsible": users["docente1" if index % 2 == 0 else "docente2"], "title": title, "description": "Actividad ficticia para practicar el desarrollo asistido por agentes en la UNTDF.", "starts_at": reference + timedelta(hours=hours), "capacity": capacity, "is_active": active})
             activities[key] = activity
         for username, key in [("ana", "taller"), ("ana", "proxima"), ("bruno", "completa"), ("bruno", "taller")]:
             activity = activities[key]

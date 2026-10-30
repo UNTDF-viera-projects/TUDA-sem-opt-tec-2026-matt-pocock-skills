@@ -55,3 +55,14 @@ class SeedTests(BaseCase):
         self.assertEqual(Registration.objects.filter(activity_id__in=demo_ids).count(),0)
     def test_seed_rejects_naive_reference(self):
         with self.assertRaises(CommandError):call_command("seed_demo",reference_time="2030-01-01T00:00:00",stdout=StringIO())
+    def test_seed_assigns_staff_and_preserves_existing_non_staff_account(self):
+        User=get_user_model()
+        existing=User.objects.create_user("docente",password="original")
+        call_command("seed_demo",reference_time=NOW.isoformat(),stdout=StringIO())
+        existing.refresh_from_db()
+        self.assertFalse(existing.is_staff)
+        self.assertTrue(existing.check_password("original"))
+        seeded=Activity.objects.filter(seed_key__isnull=False)
+        self.assertEqual(seeded.count(),5)
+        self.assertEqual(seeded.filter(responsible__is_staff=False).count(),0)
+        self.assertGreaterEqual(seeded.values("responsible_id").distinct().count(),2)

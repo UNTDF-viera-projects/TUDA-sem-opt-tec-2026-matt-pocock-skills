@@ -143,3 +143,24 @@ class ViewTests(BaseCase):
         self.activity.is_active=False;self.activity.starts_at=NOW-timedelta(hours=2);self.activity.save()
         self.client.force_login(self.ana); response=self.client.get("/my-registrations/")
         self.assertContains(response,"Práctica");self.assertNotContains(response,"Privada Bruno")
+    def test_teacher_list_is_private_and_includes_all_own_activities(self):
+        from django.contrib.auth import get_user_model
+        User=get_user_model()
+        teacher=User.objects.create_user("docente1",is_staff=True)
+        other=User.objects.create_user("docente2",is_staff=True)
+        activity(title="Propia pasada",responsible=teacher,is_active=False,starts_at=NOW-timedelta(days=1))
+        activity(title="Ajena",responsible=other)
+        self.client.force_login(self.ana)
+        self.assertEqual(self.client.get("/teacher/activities/").status_code,403)
+        self.client.force_login(teacher)
+        response=self.client.get("/teacher/activities/")
+        self.assertContains(response,"Propia pasada")
+        self.assertContains(response,"Deshabilitada")
+        self.assertContains(response,"0 / 2")
+        self.assertNotContains(response,"Ajena")
+    def test_teacher_list_empty_and_requires_authentication(self):
+        self.assertRedirects(self.client.get("/teacher/activities/"),"/accounts/login/?next=/teacher/activities/")
+        from django.contrib.auth import get_user_model
+        teacher=get_user_model().objects.create_user("sin-actividades",is_staff=True)
+        self.client.force_login(teacher)
+        self.assertContains(self.client.get("/teacher/activities/"),"No tenés actividades asignadas")

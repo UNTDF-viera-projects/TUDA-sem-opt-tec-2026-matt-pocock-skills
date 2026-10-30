@@ -13,7 +13,7 @@ uv run --locked python manage.py seed_demo
 uv run --locked python manage.py runserver 127.0.0.1:8000
 ```
 
-Abrir http://localhost:8000/ . Cuentas ficticias: `ana`, `bruno`, `docente`; contraseña inicial `untdf-demo-2026`. Docente entra en `/admin/`. Las cuentas existentes conservan su contraseña y permisos al repetir seed. Recorrido: ingresar → catálogo → actividad → inscribirme → mis inscripciones → cancelar → salir (POST). Todos los horarios se muestran en America/Argentina/Ushuaia.
+Abrir http://localhost:8000/ . Cuentas ficticias: `ana`, `bruno`, `docente`, `docente1`, `docente2`; contraseña inicial `untdf-demo-2026`. Docente entra en `/admin/`; `docente1` y `docente2` pueden consultar sus actividades en `/teacher/activities/`. Las actividades de ejemplo se reparten entre ambos. Las cuentas existentes conservan su contraseña y permisos al repetir seed. Recorrido: ingresar → catálogo → actividad → inscribirme → mis inscripciones → cancelar → salir (POST). Todos los horarios se muestran en America/Argentina/Ushuaia.
 
 ```sh
 ./scripts/check.sh
@@ -28,6 +28,10 @@ git config core.hooksPath .githooks
 Los commits de solo documentación no lo disparan. En CI, `.github/workflows/check.yml` corre el mismo script.
 
 Las pruebas usan `data/test.sqlite3`, aislada de `data/db.sqlite3`, y eliminan únicamente la base de pruebas. La suite completa corre 50 pruebas. Las pruebas concurrentes usan conexiones independientes y un archivo real, con barrera de inicio. No ejecutar dos suites sobre la misma carpeta al mismo tiempo.
+
+## Responsables docentes
+
+Cada actividad tiene un responsable staff, asignable desde la administración. El listado **Mis actividades** muestra solo las actividades del docente, incluso pasadas o deshabilitadas, con sus inscripciones vigentes. Antes de eliminar un responsable o quitarle el acceso staff hay que reasignar sus actividades. La migración asigna las actividades existentes al primer usuario staff; si no existe, crea `responsable-migracion` sin contraseña utilizable. Seed conserva los responsables ya asignados; si `docente1` o `docente2` ya existe sin acceso staff, se detiene sin modificar datos hasta resolver el conflicto.
 
 ## Cancelar una inscripción
 

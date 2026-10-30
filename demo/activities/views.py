@@ -53,3 +53,11 @@ def mine(request):
     registrations = Registration.objects.filter(student=request.user).select_related("activity")
     rows = [{"registration": registration, "can_cancel": can_cancel(registration, now)} for registration in registrations]
     return render(request, "activities/mine.html", {"rows": rows})
+
+@login_required
+def teacher_activities(request):
+    from django.core.exceptions import PermissionDenied
+    if not request.user.is_staff:
+        raise PermissionDenied
+    activities = with_availability().filter(responsible=request.user).order_by("starts_at", "pk")
+    return render(request, "activities/teacher_activities.html", {"activities": activities})

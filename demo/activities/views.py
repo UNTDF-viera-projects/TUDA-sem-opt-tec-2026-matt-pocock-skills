@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.db.models import Case, IntegerField, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -73,3 +74,12 @@ def change_activity_enabled(request, pk, enabled):
         raise Http404
     flash_result(request, result)
     return redirect("teacher_activities")
+
+@login_required
+def teacher_activity_detail(request, pk):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    activity = get_object_or_404(with_availability().filter(responsible=request.user), pk=pk)
+    registrations = (Registration.objects.filter(activity=activity).select_related("student")
+        .order_by(Case(When(cancelled_at__isnull=True, then=Value(0)), default=Value(1), output_field=IntegerField()), "created_at", "pk"))
+    return render(request, "activities/teacher_activity_detail.html", {"activity": activity, "registrations": registrations})

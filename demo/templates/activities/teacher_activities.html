@@ -3,7 +3,7 @@
 <h1>Mis actividades</h1>
 {% for activity in activities %}
 <article>
-  <h2>{{ activity.title }}</h2>
+  <h2><a href="{% url 'teacher_activity_detail' activity.pk %}">{{ activity.title }}</a></h2>
   <p>{{ activity.starts_at|date:"d/m/Y H:i" }} · {% if activity.is_active %}Habilitada{% else %}Deshabilitada{% endif %}</p>
   <p>{{ activity.occupied }} / {{ activity.capacity }} inscripciones vigentes</p>
   {% if activity.is_active %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="back"><a href="{% url 'teacher_activities' %}">← Mis actividades</a></p>
+<article>
+  <header class="page-head">
+    <p class="eyebrow">Detalle de actividad</p>
+    <h1>{{ activity.title }}</h1>
+    <p class="lead">{{ activity.description }}</p>
+  </header>
+
+  <div class="teacher-detail">
+    <aside class="teacher-detail-facts" aria-label="Ficha de actividad">
+      <p class="eyebrow">Ficha de actividad</p>
+      <p class="badge {% if not activity.is_active %}badge--muted{% endif %}">{% if activity.is_active %}Habilitada{% else %}Deshabilitada{% endif %}</p>
+      <dl>
+        <div><dt>Inicio (Ushuaia)</dt><dd>{{ activity.starts_at|date:"d/m/Y H:i" }}</dd></div>
+        <div><dt>Inscripciones vigentes / capacidad</dt><dd class="teacher-detail-occupancy">{{ activity.occupied }} <span>/ {{ activity.capacity }}</span></dd></div>
+        <div><dt>Cupos disponibles</dt><dd>{{ activity.available }}</dd></div>
+      </dl>
+    </aside>
+
+    <section aria-labelledby="teacher-registrations-title">
+      <p class="eyebrow">Listado</p>
+      <h2 id="teacher-registrations-title">Inscripciones</h2>
+      <p class="muted teacher-detail-intro">Las inscripciones vigentes aparecen primero; las canceladas se conservan para consulta.</p>
+      <ul class="teacher-registration-list">
+        {% for registration in registrations %}
+        <li class="teacher-registration">
+          <div class="teacher-registration-avatar" aria-hidden="true">{{ registration.student.username|slice:":1"|upper }}</div>
+          <div class="teacher-registration-person">
+            <strong>{{ registration.student }}</strong>
+            <span>Inscripción · {{ registration.created_at|date:"d/m/Y H:i" }}</span>
+            {% if registration.cancelled_at %}<span>Cancelación · {{ registration.cancelled_at|date:"d/m/Y H:i" }}</span>{% endif %}
+          </div>
+          <span class="badge {% if registration.cancelled_at %}badge--muted{% endif %}">{% if registration.cancelled_at %}Cancelada{% else %}Vigente{% endif %}</span>
+        </li>
+        {% empty %}
+        <li class="teacher-registration-empty">No hay inscripciones para esta actividad.</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+</article>
+{% endblock %}

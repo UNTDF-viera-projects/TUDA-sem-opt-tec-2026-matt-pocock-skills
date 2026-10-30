@@ -8,6 +8,8 @@ CANCELLATION_WINDOW_HOURS = 24
 CANCELLATION_WINDOW = timedelta(hours=CANCELLATION_WINDOW_HOURS)
 
 MESSAGES = {
+    "enabled": "Actividad habilitada.",
+    "disabled_activity": "Actividad deshabilitada; se conservaron las inscripciones vigentes.",
     "registered": "Inscripción confirmada.",
     "already_registered": "Ya estás inscripto en esta actividad.",
     "previously_cancelled": "Cancelaste tu inscripción; no podés volver a inscribirte.",
@@ -77,6 +79,21 @@ def cancel_registration(*, student, activity_id, now=None):
             registration.cancelled_at = now
             registration.save(update_fields=["cancelled_at"])
             return "cancelled"
+    except OperationalError as error:
+        if "locked" in str(error).lower():
+            return "busy"
+        raise
+
+
+def set_activity_enabled(*, teacher, activity_id, enabled):
+    try:
+        with transaction.atomic():
+            activity = Activity.objects.filter(pk=activity_id, responsible=teacher).first()
+            if activity is None:
+                return "not_found"
+            activity.is_active = enabled
+            activity.save(update_fields=["is_active"])
+            return "enabled" if enabled else "disabled_activity"
     except OperationalError as error:
         if "locked" in str(error).lower():
             return "busy"

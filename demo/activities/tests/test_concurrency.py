@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import connections, close_old_connections
 from django.test import TransactionTestCase
 from activities.models import Registration
-from activities.services import cancel_registration, register, with_availability
+from activities.services import cancel_registration, register, set_activity_enabled, with_availability
 from .support import NOW, activity
 
 class ConcurrencyTests(TransactionTestCase):
@@ -70,3 +70,15 @@ class ConcurrencyTests(TransactionTestCase):
         self.assertEqual(Registration.objects.count(),1)
         # La cancelación perdedora no pisa el instante de la ganadora.
         self.assertEqual(Registration.objects.get(student=self.ana).cancelled_at,NOW if outcomes[0]=="cancelled" else later)
+
+    def test_registration_and_disabling_are_serialized(self):
+        teacher=get_user_model().objects.create_user("docente-concurrencia",is_staff=True)
+        self.activity.responsible=teacher; self.activity.save()
+        outcomes=self.race([
+            lambda: register(student=self.ana,activity_id=self.activity.pk,now=NOW),
+            lambda: set_activity_enabled(teacher=teacher,activity_id=self.activity.pk,enabled=False),
+        ])
+        self.assertIn(outcomes,[["registered","disabled_activity"],["disabled","disabled_activity"]])
+        self.assertFalse(with_availability().get(pk=self.activity.pk).is_active)
+        self.assertEqual(Registration.objects.count(),1 if outcomes[0]=="registered" else 0)
+        self.assertEqual(register(student=self.bruno,activity_id=self.activity.pk,now=NOW),"disabled")

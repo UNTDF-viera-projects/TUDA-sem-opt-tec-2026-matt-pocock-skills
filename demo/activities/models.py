@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 class Activity(models.Model):
+    responsible = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="responsible_activities", verbose_name="responsable", limit_choices_to={"is_staff": True})
     title = models.CharField("título", max_length=160)
     description = models.TextField("descripción")
     starts_at = models.DateTimeField("inicio")

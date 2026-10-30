@@ -1,13 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from .forms import RegistrationForm
 from .models import Registration
-from .services import CANCELLATION_WINDOW_HOURS, MESSAGES, can_cancel, cancel_registration, register, with_availability
+from .services import CANCELLATION_WINDOW_HOURS, MESSAGES, can_cancel, cancel_registration, register, set_activity_enabled, with_availability
 
-SUCCESS_RESULTS = {"registered", "cancelled"}
+SUCCESS_RESULTS = {"registered", "cancelled", "enabled", "disabled_activity"}
 
 def flash_result(request, result):
     severity = "success" if result in SUCCESS_RESULTS else "warning"
@@ -56,8 +58,18 @@ def mine(request):
 
 @login_required
 def teacher_activities(request):
-    from django.core.exceptions import PermissionDenied
     if not request.user.is_staff:
         raise PermissionDenied
     activities = with_availability().filter(responsible=request.user).order_by("starts_at", "pk")
     return render(request, "activities/teacher_activities.html", {"activities": activities})
+
+@login_required
+@require_POST
+def change_activity_enabled(request, pk, enabled):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    result = set_activity_enabled(teacher=request.user, activity_id=pk, enabled=enabled)
+    if result == "not_found":
+        raise Http404
+    flash_result(request, result)
+    return redirect("teacher_activities")

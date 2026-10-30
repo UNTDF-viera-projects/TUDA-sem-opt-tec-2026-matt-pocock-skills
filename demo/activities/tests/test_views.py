@@ -164,3 +164,70 @@ class ViewTests(BaseCase):
         teacher=get_user_model().objects.create_user("sin-actividades",is_staff=True)
         self.client.force_login(teacher)
         self.assertContains(self.client.get("/teacher/activities/"),"No tenés actividades asignadas")
+    def test_teacher_disables_activity_and_preserves_student_registration(self):
+        from django.contrib.auth import get_user_model
+        teacher=get_user_model().objects.create_user('docente',is_staff=True)
+        self.activity.responsible=teacher; self.activity.save()
+        self.enroll()
+        self.client.force_login(teacher)
+        page=self.client.get('/teacher/activities/')
+        self.assertContains(page,'1 / 2 inscripciones vigentes')
+        self.assertContains(page,'confirm(')
+        self.assertContains(page,'1 inscripciones vigentes')
+        response=self.client.post(f'/teacher/activities/{self.activity.pk}/disable/',follow=True)
+        self.assertContains(response,'Deshabilitada')
+        self.client.force_login(self.ana)
+        self.assertNotContains(self.client.get('/activities/'),'Práctica')
+        with freeze_view_clock(self.client,NOW):
+            self.assertContains(self.client.get(f'/activities/{self.activity.pk}/'),'Cancelar inscripción')
+            self.assertContains(self.client.post(f'/activities/{self.activity.pk}/cancel/',follow=True),'Inscripción cancelada')
+        self.client.force_login(self.bruno)
+        self.assertContains(self.client.post(f'/activities/{self.activity.pk}/register/',follow=True),'La actividad está deshabilitada.')
+    def test_teacher_changes_only_own_activity_with_post_and_csrf(self):
+        from django.contrib.auth import get_user_model
+        User=get_user_model()
+        teacher=User.objects.create_user('responsable',is_staff=True)
+        other=User.objects.create_user('otro',is_staff=True)
+        self.activity.responsible=teacher; self.activity.save()
+        client=Client(enforce_csrf_checks=True)
+        disable=f'/teacher/activities/{self.activity.pk}/disable/'
+        enable=f'/teacher/activities/{self.activity.pk}/enable/'
+        client.force_login(self.ana)
+        client.get(f'/activities/{self.activity.pk}/')
+        self.assertEqual(client.post(disable,{'csrfmiddlewaretoken':client.cookies['csrftoken'].value}).status_code,403)
+        client.force_login(other)
+        client.get('/teacher/activities/')
+        self.assertEqual(client.post(disable,{'csrfmiddlewaretoken':client.cookies['csrftoken'].value}).status_code,404)
+        self.assertEqual(client.post(enable,{'csrfmiddlewaretoken':client.cookies['csrftoken'].value}).status_code,404)
+        client.force_login(teacher)
+        self.assertEqual(client.get(disable).status_code,405)
+        self.assertEqual(client.get(enable).status_code,405)
+        self.assertEqual(client.post(disable).status_code,403)
+        client.get('/teacher/activities/')
+        token=client.cookies['csrftoken'].value
+        self.assertEqual(client.post(disable,{'csrfmiddlewaretoken':token}).status_code,302)
+        self.assertNotContains(client.get('/teacher/activities/'),'confirm(')
+        self.assertEqual(client.post(enable,{'csrfmiddlewaretoken':token}).status_code,302)
+        self.assertContains(client.get('/teacher/activities/'),'Habilitada')
+    def test_reenable_preserves_capacity_and_started_rules(self):
+        from django.contrib.auth import get_user_model
+        teacher=get_user_model().objects.create_user('docente-reglas',is_staff=True)
+        self.activity.responsible=teacher; self.activity.capacity=1; self.activity.is_active=False; self.activity.save()
+        Registration.objects.create(student=self.ana,activity=self.activity)
+        self.client.force_login(teacher)
+        self.client.post(f'/teacher/activities/{self.activity.pk}/enable/')
+        self.client.force_login(self.bruno)
+        self.assertContains(self.client.post(f'/activities/{self.activity.pk}/register/',follow=True),'La actividad no tiene cupos disponibles.')
+        self.activity.starts_at=timezone.now()-timedelta(hours=1); self.activity.is_active=False; self.activity.save()
+        self.client.force_login(teacher)
+        self.client.post(f'/teacher/activities/{self.activity.pk}/enable/')
+        self.client.force_login(self.bruno)
+        self.assertContains(self.client.post(f'/activities/{self.activity.pk}/register/',follow=True),'La actividad ya comenzó.')
+
+    def test_teacher_can_disable_after_activity_started(self):
+        from django.contrib.auth import get_user_model
+        teacher=get_user_model().objects.create_user('docente-pasada',is_staff=True)
+        self.activity.responsible=teacher; self.activity.starts_at=timezone.now()-timedelta(hours=1); self.activity.save()
+        self.client.force_login(teacher)
+        self.client.post(f'/teacher/activities/{self.activity.pk}/disable/')
+        self.assertContains(self.client.get('/teacher/activities/'),'Deshabilitada')

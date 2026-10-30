@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Case, IntegerField, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -61,3 +62,13 @@ def teacher_activities(request):
         raise PermissionDenied
     activities = with_availability().filter(responsible=request.user).order_by("starts_at", "pk")
     return render(request, "activities/teacher_activities.html", {"activities": activities})
+
+@login_required
+def teacher_activity_detail(request, pk):
+    from django.core.exceptions import PermissionDenied
+    if not request.user.is_staff:
+        raise PermissionDenied
+    activity = get_object_or_404(with_availability().filter(responsible=request.user), pk=pk)
+    registrations = (Registration.objects.filter(activity=activity).select_related("student")
+        .order_by(Case(When(cancelled_at__isnull=True, then=Value(0)), default=Value(1), output_field=IntegerField()), "created_at", "pk"))
+    return render(request, "activities/teacher_activity_detail.html", {"activity": activity, "registrations": registrations})

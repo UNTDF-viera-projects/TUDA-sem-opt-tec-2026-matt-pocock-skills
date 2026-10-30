@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -88,4 +89,8 @@ def teacher_activity_detail(request, pk):
     activity = get_object_or_404(with_availability().filter(responsible=request.user), pk=pk)
     registrations = (Registration.objects.filter(activity=activity).select_related("student")
         .order_by(Case(When(cancelled_at__isnull=True, then=Value(0)), default=Value(1), output_field=IntegerField()), "created_at", "pk"))
+    # Prototipo descartable: tres variantes en la pantalla docente existente.
+    variant = request.GET.get("variant")
+    if settings.DEBUG and variant in {"A", "B", "C"}:
+        return render(request, "activities/prototype_teacher_detail.html", {"activity": activity, "registrations": registrations, "variant": variant})
     return render(request, "activities/teacher_activity_detail.html", {"activity": activity, "registrations": registrations})

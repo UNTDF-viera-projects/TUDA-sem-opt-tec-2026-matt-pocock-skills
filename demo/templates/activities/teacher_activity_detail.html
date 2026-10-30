@@ -4,7 +4,7 @@
 <p>{{ activity.starts_at|date:"d/m/Y H:i" }} · {% if activity.is_active %}Habilitada{% else %}Deshabilitada{% endif %}</p>
 <h2>Inscripciones</h2>
 <table>
-  <thead><tr><th>Usuario</th><th>Fecha de inscripción</th><th>Estado</th><th>Fecha de cancelación</th></tr></thead>
+  <thead><tr><th>Alumno</th><th>Fecha de inscripción</th><th>Estado</th><th>Fecha de cancelación</th></tr></thead>
   <tbody>
   {% for registration in registrations %}
     <tr>

@@ -69,6 +69,12 @@ def teacher_activities(request):
 def change_activity_enabled(request, pk, enabled):
     if not request.user.is_staff:
         raise PermissionDenied
+    if not enabled:
+        activity = get_object_or_404(with_availability().filter(responsible=request.user), pk=pk)
+        if request.POST.get("confirm") != "yes" or request.session.get("confirm_disable_activity") != pk:
+            request.session["confirm_disable_activity"] = pk
+            return render(request, "activities/confirm_disable_activity.html", {"activity": activity})
+        request.session.pop("confirm_disable_activity", None)
     result = set_activity_enabled(teacher=request.user, activity_id=pk, enabled=enabled)
     if result == "not_found":
         raise Http404

@@ -169,12 +169,16 @@ class ViewTests(BaseCase):
         teacher=get_user_model().objects.create_user('docente',is_staff=True)
         self.activity.responsible=teacher; self.activity.save()
         self.enroll()
+        cancelled_student=get_user_model().objects.create_user('cancelado')
+        Registration.objects.create(student=cancelled_student,activity=self.activity,cancelled_at=NOW)
         self.client.force_login(teacher)
         page=self.client.get('/teacher/activities/')
         self.assertContains(page,'1 / 2 inscripciones vigentes')
-        self.assertContains(page,'confirm(')
-        self.assertContains(page,'1 inscripciones vigentes')
-        response=self.client.post(f'/teacher/activities/{self.activity.pk}/disable/',follow=True)
+        url=f'/teacher/activities/{self.activity.pk}/disable/'
+        confirmation=self.client.post(url)
+        self.assertContains(confirmation,'Se conservarán 1 inscripciones vigentes')
+        self.assertContains(self.client.get('/teacher/activities/'),'Habilitada')
+        response=self.client.post(url, {'confirm': 'yes'}, follow=True)
         self.assertContains(response,'Deshabilitada')
         self.client.force_login(self.ana)
         self.assertNotContains(self.client.get('/activities/'),'Práctica')
@@ -205,9 +209,15 @@ class ViewTests(BaseCase):
         self.assertEqual(client.post(disable).status_code,403)
         client.get('/teacher/activities/')
         token=client.cookies['csrftoken'].value
-        self.assertEqual(client.post(disable,{'csrfmiddlewaretoken':token}).status_code,302)
-        self.assertNotContains(client.get('/teacher/activities/'),'confirm(')
+        confirmation=client.post(disable,{'csrfmiddlewaretoken':token, 'confirm':'yes'})
+        self.assertContains(confirmation,'Confirmar deshabilitación')
+        self.assertContains(client.get('/teacher/activities/'),'Habilitada')
+        self.assertEqual(client.post(disable).status_code,403)
+        self.assertEqual(client.post(disable,{'csrfmiddlewaretoken':token, 'confirm':'yes'}).status_code,302)
+        self.assertContains(client.get('/teacher/activities/'),'Deshabilitada')
         self.assertEqual(client.post(enable,{'csrfmiddlewaretoken':token}).status_code,302)
+        self.assertContains(client.get('/teacher/activities/'),'Habilitada')
+        self.assertContains(client.post(disable,{'csrfmiddlewaretoken':token, 'confirm':'yes'}),'Confirmar deshabilitación')
         self.assertContains(client.get('/teacher/activities/'),'Habilitada')
     def test_reenable_preserves_capacity_and_started_rules(self):
         from django.contrib.auth import get_user_model
@@ -229,7 +239,9 @@ class ViewTests(BaseCase):
         teacher=get_user_model().objects.create_user('docente-pasada',is_staff=True)
         self.activity.responsible=teacher; self.activity.starts_at=timezone.now()-timedelta(hours=1); self.activity.save()
         self.client.force_login(teacher)
-        self.client.post(f'/teacher/activities/{self.activity.pk}/disable/')
+        url=f'/teacher/activities/{self.activity.pk}/disable/'
+        self.client.post(url)
+        self.client.post(url, {'confirm':'yes'})
         self.assertContains(self.client.get('/teacher/activities/'),'Deshabilitada')
     def test_teacher_opens_own_activity_and_sees_registration_information_in_order(self):
         from django.contrib.auth import get_user_model
@@ -244,6 +256,7 @@ class ViewTests(BaseCase):
         url=f'/teacher/activities/{target.pk}/'
         self.assertContains(listing,f'href="{url}"')
         response=self.client.get(url)
+        self.assertContains(response,'<th>Alumno</th>', html=True)
         self.assertContains(response,'Actividad histórica')
         self.assertContains(response,'Deshabilitada')
         self.assertContains(response,'bruno')

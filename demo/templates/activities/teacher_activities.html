@@ -7,7 +7,7 @@
   <p>{{ activity.starts_at|date:"d/m/Y H:i" }} · {% if activity.is_active %}Habilitada{% else %}Deshabilitada{% endif %}</p>
   <p>{{ activity.occupied }} / {{ activity.capacity }} inscripciones vigentes</p>
   {% if activity.is_active %}
-  <form method="post" action="{% url 'disable_activity' activity.pk %}" onsubmit="return confirm('¿Deshabilitar esta actividad? Se conservarán {{ activity.occupied }} inscripciones vigentes.');">
+  <form method="post" action="{% url 'disable_activity' activity.pk %}">
     {% csrf_token %}<button>Deshabilitar</button>
   </form>
   {% else %}

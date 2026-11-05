@@ -1,0 +1,165 @@
+/* Componentes propios de la clase de wayfinder (se suman a untdf.css y matt.css) */
+:root {
+  --niebla: #9aa3ad;
+  --niebla-suave: #eef0f2;
+  --frontera: #e4b919;
+  --frontera-suave: #fdf6dc;
+}
+
+/* ---------- Grafo de tickets ---------- */
+.grafo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45em 0.8em;
+  font-size: 0.5em;
+  margin-top: 0.4em;
+}
+
+.grafo .col-tit {
+  font-family: var(--r-code-font);
+  color: var(--untdf-gris);
+  text-align: center;
+  font-size: 0.85em;
+}
+
+.ticket {
+  position: relative;
+  padding: 0.45em 0.6em 0.45em 0.7em;
+  border-radius: 10px;
+  background: #fff;
+  border: 2px solid #ddd;
+  border-left-width: 8px;
+  line-height: 1.2;
+}
+
+.ticket b {
+  display: block;
+}
+
+.ticket small {
+  display: block;
+  margin-top: 0.2em;
+  font-family: var(--r-code-font);
+  color: var(--untdf-gris);
+  font-size: 0.82em;
+}
+
+.ticket.resuelto { border-color: var(--verde); background: var(--verde-suave); }
+.ticket.frontera { border-color: var(--frontera); background: var(--frontera-suave); }
+.ticket.bloqueado { border-color: #ccc; color: #888; }
+.ticket.reclamado { border-color: var(--agente); background: var(--agente-suave); }
+.ticket.fuera { border-color: #ccc; border-style: dashed; color: #999; text-decoration: line-through; }
+.ticket.invalidado { border-color: #ccc; border-style: dashed; color: #999; }
+
+.niebla-caja {
+  padding: 0.5em 0.7em;
+  border-radius: 10px;
+  background: repeating-linear-gradient(135deg, var(--niebla-suave), var(--niebla-suave) 10px, #f7f8f9 10px, #f7f8f9 20px);
+  border: 2px dashed var(--niebla);
+  color: #5f6770;
+}
+
+.leyenda {
+  display: flex;
+  gap: 1.2em;
+  justify-content: center;
+  font-size: 0.45em;
+  margin-top: 0.7em;
+}
+
+.leyenda span::before {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 0.35em;
+  vertical-align: -0.1em;
+  border-radius: 3px;
+  border: 2px solid #ccc;
+}
+
+.leyenda .l-resuelto::before { background: var(--verde-suave); border-color: var(--verde); }
+.leyenda .l-frontera::before { background: var(--frontera-suave); border-color: var(--frontera); }
+.leyenda .l-reclamado::before { background: var(--agente-suave); border-color: var(--agente); }
+.leyenda .l-bloqueado::before { background: #fff; }
+.leyenda .l-niebla::before { background: var(--niebla-suave); border-style: dashed; border-color: var(--niebla); }
+
+/* ---------- Tipos de ticket ---------- */
+.tipos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6em;
+}
+
+.tipos .tarjeta {
+  font-size: 0.6em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.tipos .quien {
+  align-self: flex-start;
+  padding: 0.1em 0.55em;
+  border-radius: 99px;
+  font-family: var(--r-code-font);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.quien.hitl { background: var(--untdf-rojo); color: #fff; }
+.quien.afk { background: var(--agente); color: #fff; }
+.quien.ambos { background: var(--untdf-gris); color: #fff; }
+
+/* ---------- Pasos numerados de una invocación ---------- */
+.pasos {
+  counter-reset: paso;
+  display: grid;
+  gap: 0.35em;
+  font-size: 0.6em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pasos li {
+  counter-increment: paso;
+  display: grid;
+  grid-template-columns: 1.7em 1fr;
+  gap: 0.6em;
+  align-items: start;
+  padding: 0.35em 0.6em;
+  border-radius: 10px;
+  background: var(--fondo-suave);
+}
+
+.pasos li::before {
+  content: counter(paso);
+  display: grid;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: var(--untdf-rojo);
+  color: #fff;
+  font-weight: 800;
+}
+
+.pasos li.destacado {
+  background: var(--frontera-suave);
+  outline: 2px solid var(--frontera);
+}
+
+/* ---------- Comparación lado a lado de dos mapas ---------- */
+.reveal .lado-a-lado pre code { max-height: 470px; font-size: 0.78em; }
+
+/* ---------- Tabla compacta ---------- */
+.reveal table.compacta {
+  font-size: 0.55em;
+  margin: 0.3em auto 0;
+}
+
+.reveal table.compacta th,
+.reveal table.compacta td {
+  padding: 0.3em 0.6em;
+}

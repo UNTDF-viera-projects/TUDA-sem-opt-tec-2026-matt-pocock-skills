@@ -34,6 +34,7 @@ que el repo.
 | `slides/` | Deck reveal.js 6 (vendorizado) con el tema UNTDF de la clase de Docker + `matt.css`. |
 | `ejemplo/` | Artefactos ilustrativos que el flujo deja en el repo: `AGENTS.md`, `GLOSSARY.md`, ADR, transcripción de grilling, spec y 5 tickets en `.scratch/`. Escritos por el docente, no generados por la herramienta. |
 | `referencias/skills/` | Copia literal de `grilling`, `grill-with-docs` e `implement` (MIT, © Matt Pocock) para mostrarlas en clase. |
+| `wayfinder/` | Clase siguiente: `/wayfinder` con su propio deck, ejemplo simulado (chat alumno–docente) y la demo como quedó acá. Ver `wayfinder/README.md`. |
 
 ## Práctica de los alumnos
 

@@ -163,3 +163,87 @@
 .reveal table.compacta td {
   padding: 0.3em 0.6em;
 }
+
+/* ---------- Vista completa del mapa y su tira de ubicación ---------- */
+.migas.mapa-migas .etq {
+  background: none;
+  color: var(--untdf-gris);
+  font-weight: 700;
+  padding-right: 0;
+}
+
+.vista-mapa {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1em;
+  font-size: 0.5em;
+}
+
+.archivo-mapa {
+  display: grid;
+  gap: 0.35em;
+}
+
+.archivo-mapa .bloque {
+  display: grid;
+  grid-template-columns: 11em 1fr 9.5em;
+  gap: 0.6em;
+  align-items: center;
+  padding: 0.45em 0.7em;
+  border-radius: 10px;
+  background: var(--fondo-suave);
+  border-left: 6px solid var(--untdf-rojo);
+}
+
+.archivo-mapa .bloque code {
+  font-weight: 700;
+  color: var(--untdf-rojo);
+  background: none;
+}
+
+.archivo-mapa .bloque span code { color: var(--texto); font-weight: 400; }
+
+.archivo-mapa .bloque em,
+.carpeta-issues em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--agente);
+}
+
+.archivo-mapa .bloque.niebla {
+  background: var(--niebla-suave);
+  border-left: 6px dashed var(--niebla);
+}
+
+.archivo-mapa .bloque.fuera {
+  border-left-color: #bbb;
+  color: #777;
+}
+
+.carpeta-issues ul {
+  list-style: none;
+  margin: 0.2em 0 0.5em;
+  padding: 0;
+  display: grid;
+  gap: 0.25em;
+}
+
+.carpeta-issues li {
+  padding: 0.25em 0.6em;
+  border-radius: 8px;
+  border-left: 6px solid #ccc;
+  background: #fff;
+  border-top: 1px solid #eee;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.carpeta-issues li.resuelto { border-left-color: var(--verde); background: var(--verde-suave); }
+.carpeta-issues li.frontera { border-left-color: var(--frontera); background: var(--frontera-suave); }
+.carpeta-issues li.reclamado { border-left-color: var(--agente); background: var(--agente-suave); }
+.carpeta-issues li.cerrado { color: #999; text-decoration: line-through; }
+
+.vista-mapa .archivo {
+  justify-self: start;
+  font-size: 1.3em;
+}

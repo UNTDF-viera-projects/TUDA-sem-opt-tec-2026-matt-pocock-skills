@@ -302,7 +302,41 @@ The user may run unblocked tickets in parallel, so expect other sessions to be e
         </section>
 
         <section>
+          <h2>Un mapa, cinco partes y una carpeta</h2>
+          <div class="vista-mapa">
+            <div class="archivo-mapa">
+              <span class="archivo">.scratch/conversaciones-alumno-docente/map.md</span>
+              <div class="bloque fragment"><code>## Destination</code><span>Una spec de Conversaciones alumno–docente lista para <code>/to-spec</code>. Nada construido.</span><em>📍 a dónde vamos</em></div>
+              <div class="bloque fragment"><code>## Notes</code><span>Django 5.2 + SQLite · consultar <code>domain-modeling</code> · un ticket por sesión</span><em>reglas del esfuerzo</em></div>
+              <div class="bloque fragment"><code>## Decisions so far</code><span>- Quién puede escribir y leer: alumno inscripto y responsable<br />- ¿Tiempo real o asincrónico?: polling cada 15 s</span><em>🗺️ índice: gist + link</em></div>
+              <div class="bloque niebla fragment"><code>## Not yet specified</code><span>Moderación · cómo se prueba el refresco · límites</span><em>🌫️ niebla</em></div>
+              <div class="bloque fuera fragment"><code>## Out of scope</code><span>Anuncios a todos · salas grupales · adjuntos</span><em>🚫 descartado</em></div>
+            </div>
+            <div class="carpeta-issues fragment">
+              <span class="archivo">issues/</span>
+              <ul>
+                <li class="resuelto">01 Quién puede escribir y leer</li>
+                <li class="resuelto">02 Opciones de transporte</li>
+                <li class="resuelto">03 Ciclo de vida</li>
+                <li class="resuelto">04 ¿Tiempo real o asincrónico?</li>
+                <li class="frontera">05 Cómo se ve una Conversación</li>
+                <li class="cerrado">06 Medir Channels en Compose</li>
+                <li class="cerrado">07 Anuncios a todos</li>
+                <li class="frontera">08 Conversaciones al reiniciar</li>
+                <li class="reclamado">09 Mensajes no leídos</li>
+              </ul>
+              <em>🎫 una pregunta por archivo. El mapa no los lista: se consultan acá.</em>
+            </div>
+          </div>
+          <aside class="notes">
+            Esta es la foto completa; las próximas slides hacen zoom a cada parte, y la tira gris de arriba dice cuál.
+            Es el mapa del caso después de la sesión 4 (ejemplo/.scratch/conversaciones-alumno-docente/).
+          </aside>
+        </section>
+
+        <section>
           <h2>📍 El destino</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span class="aqui">Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span>issues/</span></div>
           <p class="chico">Lo primero que se decide, porque <b>fija el alcance</b>: todo ticket se orienta hacia él.</p>
           <div class="tres-col" style="margin-top: 0.6em">
             <div class="tarjeta"><h3>Una spec</h3>Para entregar y seguir iterando. El caso típico: termina en <span class="cmd-skill">/to-spec</span>.</div>
@@ -319,6 +353,7 @@ se abre y se cierra una Conversación, cómo llegan los Mensajes y cómo se ven.
 
         <section>
           <h2>🗺️ El mapa es un índice, no un depósito</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span class="aqui">Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span>issues/</span></div>
           <div class="dos-col">
             <div>
               <ul class="pasos">
@@ -352,6 +387,7 @@ se abre y se cierra una Conversación, cómo llegan los Mensajes y cómo se ven.
 
         <section>
           <h2>🎫 Tickets de decisión, no rebanadas</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span class="aqui">issues/</span></div>
           <div class="dos-col">
             <div>
               <span class="archivo">wayfinder · 05-como-se-ve-una-conversacion.md</span>
@@ -396,6 +432,7 @@ y su inscripción queda cancelada, con fecha, y libera un Cupo. Corte vertical d
 
         <section>
           <h2>🟨 La frontera</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span class="aqui">issues/</span></div>
           <p class="chico">Tickets <b>abiertos</b>, <b>sin bloqueos pendientes</b> y <b>sin reclamar</b>: el borde de lo conocido.</p>
           <div class="grafo">
             <div class="col-tit">sin bloqueo</div><div class="col-tit">bloqueado por 01 / 02</div><div class="col-tit">bloqueado por 03 / 04</div><div class="col-tit"></div>
@@ -421,49 +458,32 @@ y su inscripción queda cancelada, con fecha, y libera un Cupo. Corte vertical d
         </section>
 
         <section>
-          <h2>🌫️ Niebla de guerra</h2>
-          <p class="chico">El mapa es <b>incompleto a propósito</b>: no se dibuja lo que todavía no se ve.</p>
-          <div class="cita" style="font-size: 0.75em">
+          <h2>🌫️ Niebla o 🚫 fuera de alcance</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span class="aqui">Not yet specified</span><span class="aqui">Out of scope</span><i>|</i><span>issues/</span></div>
+          <div class="cita" style="font-size: 0.7em">
             “The test is whether you can <b>state</b> the question precisely now, <i>not</i> whether you can <b>answer</b> it now.”
           </div>
-          <div class="dos-col" style="margin-top: 0.6em">
-            <div class="tarjeta">
-              <h3>🎫 Ticket</h3>
-              “¿Tiempo real o asincrónico?” Se puede escribir ya, aunque esté bloqueado por la investigación.
-            </div>
-            <div class="niebla-caja" style="font-size: 0.75em">
+          <div class="dos-col" style="margin-top: 0.5em">
+            <div class="niebla-caja" style="font-size: 0.7em">
               <h3 style="color: #5f6770">🌫️ Not yet specified</h3>
-              “Mensajes no leídos y avisos.” Depende de cómo se entregan los Mensajes: todavía no sabemos qué preguntar.
-            </div>
-          </div>
-          <p class="frase centro chico fragment" style="margin-top: 0.7em">
-            Resolver un ticket <em>despeja la niebla</em> que tenía adelante:<br />lo que ya se puede escribir se <em>gradúa</em> a ticket nuevo.
-          </p>
-          <aside class="notes">
-            No pre-cortar la niebla en tickets: es más gruesa que un ticket. Un parche puede graduarse en varios
-            tickets o en ninguno.
-          </aside>
-        </section>
-
-        <section>
-          <h2>🚫 Fuera de alcance no es niebla</h2>
-          <div class="dos-col">
-            <div class="niebla-caja" style="font-size: 0.72em">
-              <h3 style="color: #5f6770">Not yet specified</h3>
-              Dentro del destino, todavía borroso. <b>Se gradúa</b> cuando avanza la frontera.
-              <p class="chico" style="margin-top: 0.4em">Moderación · cómo se prueba el refresco · límites</p>
+              <b>Dentro</b> del destino, pero todavía no sabemos qué preguntar. El mapa es incompleto a propósito.
+              <p style="margin: 0.4em 0 0">Ej.: “Mensajes no leídos” dependía de cómo llegan los Mensajes.</p>
+              <p style="margin: 0.3em 0 0"><b>Se gradúa</b> a ticket cuando un ticket resuelto despeja el camino.</p>
             </div>
             <div class="tarjeta gris">
-              <h3>Out of scope</h3>
-              Más allá del destino. <b>Nunca se gradúa</b>: vuelve solo si se redibuja el destino, como esfuerzo nuevo.
-              <p class="chico" style="margin-top: 0.4em">Salas grupales · adjuntos · videollamadas · email</p>
+              <h3>🚫 Out of scope</h3>
+              <b>Más allá</b> del destino, descartado a conciencia y con su porqué.
+              <p style="margin: 0.4em 0 0">Ej.: salas grupales, adjuntos, “Anuncios a todos los inscriptos”.</p>
+              <p style="margin: 0.3em 0 0"><b>Nunca se gradúa</b>. Un ticket que resulta estar afuera se cierra y deja una línea acá.</p>
             </div>
           </div>
-          <div class="tarjeta fragment" style="margin-top: 0.8em">
-            <h3>¿Y si un ticket ya creado resulta estar fuera?</h3>
-            Se <b>cierra</b> y deja una línea en <i>Out of scope</i> con el porqué. No va a <i>Decisions so far</i>: un
-            límite no es un paso del camino. En el caso: “Anuncios a todos los inscriptos”.
-          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.6em">
+            ¿Podés formular la pregunta? <em>Ticket</em>. ¿Todavía no? <em>Niebla</em>. ¿No va hacia el destino? <em>Afuera</em>.
+          </p>
+          <aside class="notes">
+            No pre-cortar la niebla en tickets: es más gruesa que un ticket y un parche puede graduarse en varios o en
+            ninguno. Lo descartado no va a Decisions so far: un límite no es un paso del camino.
+          </aside>
         </section>
 
         <!-- ================= 3 · TIPOS ================= -->

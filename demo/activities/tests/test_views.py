@@ -256,7 +256,8 @@ class ViewTests(BaseCase):
         url=f'/teacher/activities/{target.pk}/'
         self.assertContains(listing,f'href="{url}"')
         response=self.client.get(url)
-        self.assertContains(response,'<th>Alumno</th>', html=True)
+        self.assertContains(response,'Inscripciones')
+        self.assertContains(response,'Cupos disponibles')
         self.assertContains(response,'Actividad histórica')
         self.assertContains(response,'Deshabilitada')
         self.assertContains(response,'bruno')

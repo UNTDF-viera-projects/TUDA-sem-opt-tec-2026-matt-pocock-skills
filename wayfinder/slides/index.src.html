@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wayfinder: planificar lo que no entra en una sesión · UNTDF</title>
+    <link rel="stylesheet" href="../../slides/vendor/reveal/reset.css" />
+    <link rel="stylesheet" href="../../slides/vendor/reveal/reveal.css" />
+    <link rel="stylesheet" href="../../slides/vendor/reveal/plugin/highlight/monokai.css" />
+    <link rel="stylesheet" href="../../slides/untdf.css" />
+    <link rel="stylesheet" href="../../slides/matt.css" />
+    <link rel="stylesheet" href="wayfinder.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- ================= APERTURA ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="Apertura">
+          <div style="margin-top: 80px">
+            <img class="portada-logo" src="../../slides/assets/logo-untdf-white.svg" alt="UNTDF" />
+            <h1 style="font-size: 2.3em">Wayfinder</h1>
+            <h2 style="font-weight: 400">Planificar lo que no entra en una sesión</h2>
+            <p style="margin-top: 1.4em; font-size: 0.75em">
+              <span class="cmd-skill">/wayfinder</span> → <span class="cmd-skill">/to-spec</span> →
+              <span class="cmd-skill">/to-tickets</span> → <span class="cmd-skill">/implement</span>
+            </p>
+            <p style="margin-top: 1.6em; font-size: 0.7em">
+              Seminario Tecnológico Optativo · Introducción al Desarrollo Asistido por Agentes<br />
+              Universidad Nacional de Tierra del Fuego, A. e I.A.S.
+            </p>
+          </div>
+          <aside class="notes">
+            Continuación directa de la clase de skills de Matt Pocock. Ya conocen grilling, to-spec, to-tickets e
+            implement. Hoy: qué hacer cuando la idea es tan grande y difusa que ni siquiera el grill entra en una sesión.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Hoja de ruta</h2>
+          <div class="ruta">
+            <div><b>1</b>Dónde encaja<br /><small>10 min</small></div>
+            <div><b>2</b>Conceptos: destino, mapa, niebla<br /><small>20 min</small></div>
+            <div><b>3</b>Cuatro tipos de ticket<br /><small>8 min</small></div>
+            <div><b>4</b>Dos formas de invocarlo<br /><small>10 min</small></div>
+            <div><b>5</b>El caso: conversaciones alumno–docente<br /><small>20 min</small></div>
+            <div><b>6</b>Beneficios y costos<br /><small>5 min</small></div>
+            <div><b>7</b>En vivo y práctica<br /><small>45 min</small></div>
+            <div><b>8</b>Cierre<br /><small>2 min</small></div>
+          </div>
+          <p class="muted chico" style="margin-top: 1.2em">
+            Fuente: <code>skills/engineering/wayfinder</code> de <code>github.com/mattpocock/skills</code> (MIT). El caso
+            simulado está en <code>matt-skills/wayfinder/ejemplo/</code>; en clase lo corremos de verdad.
+          </p>
+        </section>
+
+        <!-- ================= 1 · DÓNDE ENCAJA ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="1 · Dónde encaja">
+          <div style="margin-top: 150px">
+            <div class="numero">1</div>
+            <h2>Dónde encaja</h2>
+            <p>Una rampa de entrada al flujo principal, para cuando no se ve el camino.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>El flujo que ya conocemos</h2>
+          <div class="mapa">
+            <span class="nodo lleno" style="grid-column: 1 / span 3; grid-row: 1">wayfinder<small>esfuerzo enorme y difuso</small></span>
+            <span class="fl v" style="grid-column: 5; grid-row: 1">↘</span>
+
+            <span class="nodo lateral" style="grid-column: 1 / span 3; grid-row: 2">grill-with-docs<small>idea que entra en una sesión</small></span>
+            <span class="fl" style="grid-column: 4; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 5; grid-row: 2">to-spec<small>destino</small></span>
+            <span class="fl" style="grid-column: 6; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 7; grid-row: 2">to-tickets<small>rebanadas</small></span>
+            <span class="fl" style="grid-column: 8; grid-row: 2">→</span>
+            <span class="bucle" style="grid-column: 9; grid-row: 2">
+              <span class="etq">× ticket</span>
+              <span class="nodo principal">implement<small>tdd + code-review</small></span>
+            </span>
+            <span class="fl" style="grid-column: 10; grid-row: 2">→</span>
+            <span class="nodo principal" style="grid-column: 11; grid-row: 2">retro<small>mejorar el entorno</small></span>
+          </div>
+          <div class="dos-col" style="margin-top: 1em">
+            <div class="tarjeta fragment">
+              <h3>Dos rampas, un mismo destino</h3>
+              Las dos desembocan en <span class="cmd-skill">/to-spec</span>. Cambia el tamaño de lo que hay que pensar antes.
+            </div>
+            <div class="tarjeta gris fragment">
+              <h3>Wayfinder no construye</h3>
+              Produce <b>decisiones</b>, no entregables. Cuando el camino se ve, entrega la posta.
+            </div>
+          </div>
+          <aside class="notes">
+            Fuente: ask-matt/SKILL.md. "When the map clears, it hands off, it doesn't build". Saltar de wayfinder a
+            implement tira a la basura el detalle enlazado en los tickets; solo vale si el esfuerzo resultó chico.
+          </aside>
+        </section>
+
+        <section>
+          <h2>¿Cuándo sí y cuándo no?</h2>
+          <div class="cita">
+            “Where <b>/grill-with-docs</b> sharpens an idea you can hold in one session, wayfinder is for the idea you
+            can't, and it's slower and denser, so save it for exactly that, <b>never a well-scoped feature</b>.”
+            <small class="muted">— <code>ask-matt/SKILL.md</code></small>
+          </div>
+          <table class="compacta" style="margin-top: 0.8em">
+            <thead><tr><th></th><th><span class="cmd-skill">/grill-with-docs</span></th><th><span class="cmd-skill">/wayfinder</span></th></tr></thead>
+            <tbody>
+              <tr><td><b>Tamaño</b></td><td>Entra en una sesión</td><td>No entra: varias sesiones, quizás varias personas</td></tr>
+              <tr><td><b>Dónde vive</b></td><td>La charla + <code>GLOSSARY.md</code> + ADR</td><td>Un mapa y tickets en el issue tracker</td></tr>
+              <tr><td><b>Sale</b></td><td>Entendimiento compartido</td><td>Un camino despejado, decisión por decisión</td></tr>
+              <tr><td><b>Ritmo</b></td><td>Rondas seguidas</td><td>Un ticket por sesión, con <code>/clear</code> entre medio</td></tr>
+            </tbody>
+          </table>
+          <aside class="notes">
+            Wayfinder usa grilling por dentro: no compite con grill-with-docs, lo reparte en el tiempo.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Contraejemplo: la clase pasada</h2>
+          <div class="dos-col">
+            <div class="tarjeta gris">
+              <h3>❌ Cancelar y reinscribir</h3>
+              Siete preguntas en dos rondas. Todo entraba en una sesión. Un mapa hubiera sido pura ceremonia.
+              <p class="chico muted" style="margin-top: 0.5em"><span class="cmd-skill">/grill-with-docs</span> alcanzaba.</p>
+            </div>
+            <div class="tarjeta">
+              <h3>✅ Conversaciones alumno–docente</h3>
+              ¿Quién habla con quién? ¿Tiempo real? ¿WebSocket con SQLite? ¿Qué pasa al cancelar? ¿Y al reiniciar la demo?
+              <p class="chico muted" style="margin-top: 0.5em">Producto y técnica mezclados, con respuestas que dependen de otras.</p>
+            </div>
+          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.8em">
+            La skill se defiende sola: si al cartografiar <em>no aparece niebla</em>,<br />no arma el mapa y te pregunta cómo seguir.
+          </p>
+          <aside class="notes">
+            Paso 2 de "Chart the map": "If this surfaces no fog ... you don't need a map. Stop and ask the user how
+            they'd like to proceed."
+          </aside>
+        </section>
+
+        <!-- ================= 2 · CONCEPTOS ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="2 · Conceptos">
+          <div style="margin-top: 150px">
+            <div class="numero">2</div>
+            <h2>Destino, mapa, frontera y niebla</h2>
+            <p>El vocabulario de la skill es el de un explorador.</p>
+          </div>
+        </section>
+
+        <section data-sincronizar>
+          <h2>Anatomía de <code>wayfinder/SKILL.md</code></h2>
+          <div class="anatomia">
+            <div>
+              <span class="archivo">wayfinder/SKILL.md</span>
+              <pre class="envolver"><code class="markdown" data-line-numbers="1-5|11-13|19-25|55-71|73-80|82-93|103-128" data-incluir="referencias/wayfinder.SKILL.md"></code></pre>
+            </div>
+            <ul class="callouts">
+              <li data-step="1" data-n="1"><b>Invocada por vos</b>: <code>disable-model-invocation</code>. Nunca arranca sola.</li>
+              <li data-step="2" data-n="2"><b>Plan, don't do</b>: planifica, no construye.</li>
+              <li data-step="3" data-n="3"><b>El mapa</b>: un issue que es índice, no depósito.</li>
+              <li data-step="4" data-n="4"><b>Tickets</b>: hijos del mapa, una pregunta del tamaño de una sesión.</li>
+              <li data-step="5" data-n="5"><b>Cuatro tipos</b>, cada uno HITL o AFK.</li>
+              <li data-step="6" data-n="6"><b>Niebla de guerra</b>: lo que todavía no se puede ticketear.</li>
+              <li data-step="7" data-n="7"><b>Dos invocaciones</b>: cartografiar o avanzar.</li>
+            </ul>
+          </div>
+          <aside class="notes">
+            128 líneas de prosa. No hay código ni scripts: todo el comportamiento es lenguaje. La parte que vive en cada
+            repo (dónde están el mapa y los tickets) la pone docs/agents/issue-tracker.md.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Un mapa, cinco partes y una carpeta</h2>
+          <div class="vista-mapa">
+            <div class="archivo-mapa">
+              <span class="archivo">.scratch/conversaciones-alumno-docente/map.md</span>
+              <div class="bloque fragment"><code>## Destination</code><span>Una spec de Conversaciones alumno–docente lista para <code>/to-spec</code>. Nada construido.</span><em>📍 a dónde vamos</em></div>
+              <div class="bloque fragment"><code>## Notes</code><span>Django 5.2 + SQLite · consultar <code>domain-modeling</code> · un ticket por sesión</span><em>reglas del esfuerzo</em></div>
+              <div class="bloque fragment"><code>## Decisions so far</code><span>- Quién puede escribir y leer: alumno inscripto y responsable<br />- ¿Tiempo real o asincrónico?: polling cada 15 s</span><em>🗺️ índice: gist + link</em></div>
+              <div class="bloque niebla fragment"><code>## Not yet specified</code><span>Moderación · cómo se prueba el refresco · límites</span><em>🌫️ niebla</em></div>
+              <div class="bloque fuera fragment"><code>## Out of scope</code><span>Anuncios a todos · salas grupales · adjuntos</span><em>🚫 descartado</em></div>
+            </div>
+            <div class="carpeta-issues fragment">
+              <span class="archivo">issues/</span>
+              <ul>
+                <li class="resuelto">01 Quién puede escribir y leer</li>
+                <li class="resuelto">02 Opciones de transporte</li>
+                <li class="resuelto">03 Ciclo de vida</li>
+                <li class="resuelto">04 ¿Tiempo real o asincrónico?</li>
+                <li class="frontera">05 Cómo se ve una Conversación</li>
+                <li class="cerrado">06 Medir Channels en Compose</li>
+                <li class="cerrado">07 Anuncios a todos</li>
+                <li class="frontera">08 Conversaciones al reiniciar</li>
+                <li class="reclamado">09 Mensajes no leídos</li>
+              </ul>
+              <em>🎫 una pregunta por archivo. El mapa no los lista: se consultan acá.</em>
+            </div>
+          </div>
+          <aside class="notes">
+            Esta es la foto completa; las próximas slides hacen zoom a cada parte, y la tira gris de arriba dice cuál.
+            Es el mapa del caso después de la sesión 4 (ejemplo/.scratch/conversaciones-alumno-docente/).
+          </aside>
+        </section>
+
+        <section>
+          <h2>📍 El destino</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span class="aqui">Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span>issues/</span></div>
+          <p class="chico">Lo primero que se decide, porque <b>fija el alcance</b>: todo ticket se orienta hacia él.</p>
+          <div class="tres-col" style="margin-top: 0.6em">
+            <div class="tarjeta"><h3>Una spec</h3>Para entregar y seguir iterando. El caso típico: termina en <span class="cmd-skill">/to-spec</span>.</div>
+            <div class="tarjeta gris"><h3>Una decisión</h3>Que hay que cerrar antes de empezar a planificar. Por ejemplo, elegir proveedor.</div>
+            <div class="tarjeta gris"><h3>Un cambio en el lugar</h3>Como migrar una estructura de datos. El mapa puede incluir la ejecución si lo dice en Notes.</div>
+          </div>
+          <div class="archivo fragment" style="margin-top: 1em">map.md · Destination (del caso)</div>
+          <pre class="fragment"><code class="markdown">Una spec de **Conversaciones alumno–docente** lista para `/to-spec`: quién habla con quién, cuándo
+se abre y se cierra una Conversación, cómo llegan los Mensajes y cómo se ven. Nada construido.</code></pre>
+          <aside class="notes">
+            Una o dos líneas. Cada sesión lee el destino antes de elegir ticket. Si cambia el destino, es otro esfuerzo.
+          </aside>
+        </section>
+
+        <section>
+          <h2>🗺️ El mapa es un índice, no un depósito</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span class="aqui">Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span>issues/</span></div>
+          <div class="dos-col">
+            <div>
+              <ul class="pasos">
+                <li><span><b>Destination</b>: a dónde vamos.</span></li>
+                <li><span><b>Notes</b>: dominio, skills a consultar, preferencias del esfuerzo.</span></li>
+                <li><span><b>Decisions so far</b>: una línea por ticket cerrado, con su link.</span></li>
+                <li><span><b>Not yet specified</b>: la niebla, en prosa.</span></li>
+                <li><span><b>Out of scope</b>: lo descartado a conciencia.</span></li>
+              </ul>
+            </div>
+            <div>
+              <div class="tarjeta">
+                <h3>Una decisión vive en un solo lugar</h3>
+                Su ticket. El mapa da el <i>gist</i> y el link; nunca repite el detalle.
+              </div>
+              <div class="tarjeta gris fragment" style="margin-top: 0.6em">
+                <h3>Los tickets abiertos no se listan</h3>
+                Se encuentran por consulta al tracker. El mapa se carga una vez por sesión: tiene que ser liviano.
+              </div>
+              <div class="tarjeta gris fragment" style="margin-top: 0.6em">
+                <h3>Se nombra por título</h3>
+                “Opciones de transporte”, no “#42”. El id va <i>dentro</i> del link.
+              </div>
+            </div>
+          </div>
+          <aside class="notes">
+            Mismo principio de fuentes primaria y secundaria de la clase pasada: el mapa es la vista de baja
+            resolución y se hace zoom al ticket solo si hace falta.
+          </aside>
+        </section>
+
+        <section>
+          <h2>🎫 Tickets de decisión, no rebanadas</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span class="aqui">issues/</span></div>
+          <div class="dos-col">
+            <div>
+              <span class="archivo">wayfinder · 05-como-se-ve-una-conversacion.md</span>
+              <pre class="chico envolver"><code class="markdown" data-incluir="ejemplo/.scratch/conversaciones-alumno-docente/issues/05-como-se-ve-una-conversacion.md"></code></pre>
+              <p class="chico">Una <b>pregunta</b>. Se cierra con una <b>respuesta</b>.</p>
+            </div>
+            <div>
+              <span class="archivo">to-tickets · 01-cancelar-la-propia-inscripcion.md</span>
+              <pre class="chico envolver"><code class="markdown" data-incluir="../ejemplo/.scratch/cancelar-y-reinscribir/issues/01-cancelar-la-propia-inscripcion.md"></code></pre>
+              <p class="chico">Qué <b>construir</b>. Se cierra con <b>código</b>.</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Los tickets de wayfinder solo llevan labels wayfinder:*, nunca ready-for-agent: no son trabajo de
+            implementación. El tamaño: una sesión de ~100k tokens.
+          </aside>
+        </section>
+
+        <section>
+          <h2>🟨 La frontera</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span>Not yet specified</span><span>Out of scope</span><i>|</i><span class="aqui">issues/</span></div>
+          <p class="chico">Tickets <b>abiertos</b>, <b>sin bloqueos pendientes</b> y <b>sin reclamar</b>: el borde de lo conocido.</p>
+          <div class="grafo">
+            <div class="col-tit">sin bloqueo</div><div class="col-tit">bloqueado por 01 / 02</div><div class="col-tit">bloqueado por 03 / 04</div><div class="col-tit"></div>
+            <div class="ticket frontera"><b>01 Quién puede escribir y leer</b><small>grilling</small></div>
+            <div class="ticket bloqueado"><b>03 Ciclo de vida</b><small>grilling · ← 01</small></div>
+            <div class="ticket bloqueado"><b>05 Cómo se ve una Conversación</b><small>prototype · ← 03, 04</small></div>
+            <div></div>
+            <div class="ticket frontera"><b>02 Opciones de transporte</b><small>research</small></div>
+            <div class="ticket bloqueado"><b>04 ¿Tiempo real o asincrónico?</b><small>grilling · ← 02</small></div>
+            <div class="ticket bloqueado"><b>06 Medir Channels en Compose</b><small>task · ← 04</small></div>
+            <div></div>
+            <div></div>
+            <div class="ticket bloqueado"><b>07 Anuncios a todos los inscriptos</b><small>grilling · ← 01</small></div>
+          </div>
+          <div class="dos-col" style="margin-top: 0.8em">
+            <div class="tarjeta fragment"><h3>Reclamar primero</h3>La sesión se asigna el ticket <b>antes</b> de trabajar: otra sesión en paralelo lo saltea.</div>
+            <div class="tarjeta gris fragment"><h3>Bloqueo nativo</h3>Si el tracker tiene dependencias (GitHub, GitLab), se usan: la frontera se ve en su propia UI.</div>
+          </div>
+          <aside class="notes">
+            Así quedó el mapa del caso al terminar la sesión 1. Solo 01 y 02 son tomables. Con tracker local, el bloqueo
+            es una línea "Blocked by:" y el reclamo es "Status: claimed".
+          </aside>
+        </section>
+
+        <section>
+          <h2>🌫️ Niebla o 🚫 fuera de alcance</h2>
+          <div class="migas mapa-migas"><span class="etq">map.md</span><span>Destination</span><span>Notes</span><span>Decisions so far</span><span class="aqui">Not yet specified</span><span class="aqui">Out of scope</span><i>|</i><span>issues/</span></div>
+          <div class="cita" style="font-size: 0.7em">
+            “The test is whether you can <b>state</b> the question precisely now, <i>not</i> whether you can <b>answer</b> it now.”
+          </div>
+          <div class="dos-col" style="margin-top: 0.5em">
+            <div class="niebla-caja" style="font-size: 0.7em">
+              <h3 style="color: #5f6770">🌫️ Not yet specified</h3>
+              <b>Dentro</b> del destino, pero todavía no sabemos qué preguntar. El mapa es incompleto a propósito.
+              <p style="margin: 0.4em 0 0">Ej.: “Mensajes no leídos” dependía de cómo llegan los Mensajes.</p>
+              <p style="margin: 0.3em 0 0"><b>Se gradúa</b> a ticket cuando un ticket resuelto despeja el camino.</p>
+            </div>
+            <div class="tarjeta gris">
+              <h3>🚫 Out of scope</h3>
+              <b>Más allá</b> del destino, descartado a conciencia y con su porqué.
+              <p style="margin: 0.4em 0 0">Ej.: salas grupales, adjuntos, “Anuncios a todos los inscriptos”.</p>
+              <p style="margin: 0.3em 0 0"><b>Nunca se gradúa</b>. Un ticket que resulta estar afuera se cierra y deja una línea acá.</p>
+            </div>
+          </div>
+          <p class="frase centro chico fragment" style="margin-top: 0.6em">
+            ¿Podés formular la pregunta? <em>Ticket</em>. ¿Todavía no? <em>Niebla</em>. ¿No va hacia el destino? <em>Afuera</em>.
+          </p>
+          <aside class="notes">
+            No pre-cortar la niebla en tickets: es más gruesa que un ticket y un parche puede graduarse en varios o en
+            ninguno. Lo descartado no va a Decisions so far: un límite no es un paso del camino.
+          </aside>
+        </section>
+
+        <!-- ================= 3 · TIPOS ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="3 · Tipos de ticket">
+          <div style="margin-top: 150px">
+            <div class="numero">3</div>
+            <h2>Cuatro tipos de ticket</h2>
+            <p>Cada uno dice <b>quién</b> lo resuelve y <b>con qué skill</b>.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Research · Prototype · Grilling · Task</h2>
+          <div class="tipos">
+            <div class="tarjeta fragment">
+              <span class="quien afk">AFK</span>
+              <h3>🔎 Research</h3>
+              <span>Buscar un <b>hecho</b> fuera del repo: documentación, APIs.</span>
+              <span class="chico">Subagente con <span class="cmd-skill">/research</span>, en paralelo. Rama descartable <code>research/&lt;nombre&gt;</code>.</span>
+            </div>
+            <div class="tarjeta fragment">
+              <span class="quien hitl">HITL</span>
+              <h3>🧪 Prototype</h3>
+              <span>Subir la fidelidad: algo <b>concreto</b> para reaccionar.</span>
+              <span class="chico"><span class="cmd-skill">/prototype</span>. Cuando la pregunta es “¿cómo se ve?” o “¿cómo se comporta?”.</span>
+            </div>
+            <div class="tarjeta fragment">
+              <span class="quien hitl">HITL</span>
+              <h3>💬 Grilling</h3>
+              <span>Conversación. <b>El caso por defecto.</b></span>
+              <span class="chico"><span class="cmd-skill">/grilling</span> + <span class="cmd-skill">/domain-modeling</span>, siempre los dos.</span>
+            </div>
+            <div class="tarjeta fragment">
+              <span class="quien ambos">HITL o AFK</span>
+              <h3>🛠️ Task</h3>
+              <span>Trabajo manual que <b>destraba</b> una decisión. El único que <i>hace</i>.</span>
+              <span class="chico">Crear una cuenta, dar accesos, mover datos para ver su forma.</span>
+            </div>
+          </div>
+          <aside class="notes">
+            En el tracker local el tipo es la línea "Type:". El agente lee el tipo, no el cuerpo: el cuerpo nunca dice
+            el tipo.
+          </aside>
+        </section>
+
+        <section>
+          <h2>La regla que no se negocia</h2>
+          <p class="frase centro" style="margin-top: 0.6em">
+            Un ticket <em>HITL</em> se resuelve solo con el humano hablando por sí mismo.
+          </p>
+          <div class="dos-col" style="margin-top: 1em">
+            <div class="tarjeta gris">
+              <h3>❌ Lo que rompe el ticket</h3>
+              Un agente de grilling que contesta sus propias preguntas “porque la recomendación era razonable”.
+            </div>
+            <div class="tarjeta">
+              <h3>✅ Lo que sí hace el agente</h3>
+              Buscar los <b>hechos</b> (código, docs, research) y traer una <b>recomendación</b>. Las <b>decisiones</b> son tuyas.
+            </div>
+          </div>
+          <aside class="notes">
+            Es la misma división de grilling: hechos para el agente, decisiones para el humano. Wayfinder la vuelve
+            explícita por ticket.
+          </aside>
+        </section>
+
+        <!-- ================= 4 · INVOCACIONES ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="4 · Dos invocaciones">
+          <div style="margin-top: 150px">
+            <div class="numero">4</div>
+            <h2>Cartografiar o avanzar</h2>
+            <p>Nunca más de un ticket por sesión (salvo research).</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Modo 1 · Chart the map</h2>
+          <p class="chico"><code>/wayfinder &lt;idea suelta&gt;</code></p>
+          <ol class="pasos">
+            <li><span><b>Nombrar el destino</b> con <span class="cmd-skill">/grilling</span> + <span class="cmd-skill">/domain-modeling</span>.</span></li>
+            <li class="destacado"><span><b>Mapear la frontera</b>: grill <b>en amplitud</b>, no en profundidad. ¿Sin niebla? No hace falta mapa: frena y pregunta.</span></li>
+            <li><span><b>Crear el mapa</b>: Destination y Notes completos, Decisions vacío, la niebla en Not yet specified.</span></li>
+            <li><span><b>Crear los tickets</b> que se pueden especificar y <b>cablear bloqueos en una segunda pasada</b>, con ids reales.</span></li>
+            <li><span><b>Lanzar subagentes</b> para cada ticket de research, en paralelo.</span></li>
+            <li><span><b>Parar.</b> Cartografiar es el trabajo de una sesión: no resuelve nada a mano.</span></li>
+          </ol>
+          <aside class="notes">
+            Segunda pasada: los issues necesitan id antes de referenciarse. Un "#&lt;n&gt;" inventado enlaza a cualquier
+            otro issue del repo.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Modo 2 · Work through the map</h2>
+          <p class="chico"><code>/wayfinder &lt;mapa&gt; [ticket]</code> · sin ticket, <b>elige el agente</b>, no vos</p>
+          <ol class="pasos">
+            <li><span><b>Cargar el mapa</b>: la vista de baja resolución, no cada ticket.</span></li>
+            <li><span><b>Elegir</b> el primero de la frontera y <b>reclamarlo</b> antes de trabajar.</span></li>
+            <li><span><b>Resolverlo según su tipo</b>. Zoom a otros tickets solo si hace falta.</span></li>
+            <li><span><b>Registrar</b>: comentario de resolución, cerrar, una línea en Decisions so far.</span></li>
+            <li class="destacado"><span><b>Rehacer el mapa</b>: tickets nuevos, niebla graduada, tickets invalidados o fuera de alcance.</span></li>
+          </ol>
+          <p class="chico muted fragment" style="margin-top: 0.6em">Otras sesiones pueden estar trabajando tickets desbloqueados en paralelo sobre el mismo tracker.</p>
+        </section>
+
+        <section>
+          <h2>En nuestro repo: tracker de markdown local</h2>
+          <div class="dos-col">
+            <div class="terminal">
+              <div class="barra"><i></i><i></i><i></i><span>wayfinder/demo</span></div>
+              <div class="cuerpo"><div class="cmd">tree .scratch/conversaciones-alumno-docente</div><div class="salida">├── map.md
+└── issues/
+    ├── 01-quien-puede-escribir-y-leer.md
+    ├── 02-opciones-de-transporte.md
+    ├── …
+    └── 09-mensajes-no-leidos.md</div></div>
+            </div>
+            <div>
+              <span class="archivo">cabecera de cada ticket</span>
+              <pre><code class="markdown">Type: grilling
+Status: claimed
+Blocked by: 02</code></pre>
+              <ul class="chico">
+                <li><b>Sin Status</b>: abierto y sin reclamar.</li>
+                <li><b>Frontera</b>: abiertos cuyos bloqueos están <code>resolved</code>; gana el número más chico.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="chico muted" style="margin-top: 0.6em">
+            Lo define <code>docs/agents/issue-tracker.md</code> · sección <i>Wayfinding operations</i>, generada por
+            <span class="cmd-skill">/setup-matt-pocock-skills</span>.
+          </p>
+        </section>
+
+        <!-- ================= 5 · EL CASO ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="5 · El caso">
+          <div style="margin-top: 150px">
+            <div class="numero">5</div>
+            <h2>El caso: un chat entre alumnos y docentes</h2>
+            <p>Simulado por el docente en <code>wayfinder/ejemplo/</code>. En clase lo corremos de verdad.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Sesión 1 · Nombrar el destino</h2>
+          <div class="dos-col">
+            <div>
+              <span class="archivo">ejemplo/sesion-1-chart.md (extracto)</span>
+              <pre class="md envolver"><code class="markdown">🔎 **Hechos** (relevados por el agente, no son preguntas): una actividad tiene un único responsable
+staff (`Activity.responsible`); la inscripción cancelada se conserva; no hay Channels ni ASGI.
+
+❓ **Q2** - **Quién habla con quién**: ¿Es una conversación privada entre un alumno y el docente
+responsable de una actividad, anclada a esa actividad?
+
+➡️ Sí: el código ya tiene ese vínculo.
+
+---
+
+❓ **Q4** - **¿"Chat" implica tiempo real?**: ¿Lo dejamos abierto como decisión del mapa?
+
+➡️ Sí: es la decisión técnica más cara.</code></pre>
+            </div>
+            <div>
+              <div class="tarjeta"><h3>domain-modeling en acción</h3>“Chat” no es un término del dominio: <b>Conversación</b> y <b>Mensaje</b> entran al <code>GLOSSARY.md</code>.</div>
+              <div class="tarjeta gris fragment" style="margin-top: 0.6em"><h3>Q4 es la jugada clave</h3>No asumir tiempo real en el destino: convertirlo en una <b>decisión del mapa</b>, con research antes.</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Sesión 1 · Frontera en amplitud</h2>
+          <table class="compacta">
+            <thead><tr><th>Frente</th><th>¿Se puede formular ya?</th><th>Queda como</th></tr></thead>
+            <tbody>
+              <tr><td>Quién puede escribir y leer</td><td>Sí</td><td>🎫 grilling</td></tr>
+              <tr><td>WebSocket, SSE o polling con este stack</td><td>Sí: es un hecho</td><td>🎫 research</td></tr>
+              <tr><td>¿Tiempo real o asincrónico?</td><td>Sí, bloqueado por el research</td><td>🎫 grilling</td></tr>
+              <tr><td>Medir Channels en Compose</td><td>Sí, bloqueado por la decisión</td><td>🎫 task</td></tr>
+              <tr><td>Anuncios a todos los inscriptos</td><td>Sí (“ticketealo y lo vemos”)</td><td>🎫 grilling</td></tr>
+              <tr><td>No leídos · reinicio de la demo · moderación · pruebas · límites</td><td>No: dependen de otras respuestas</td><td>🌫️ niebla</td></tr>
+              <tr><td>Grupos · adjuntos · videollamadas · email</td><td>—</td><td>🚫 fuera de alcance</td></tr>
+            </tbody>
+          </table>
+          <p class="chico muted" style="margin-top: 0.6em">Antes de cerrar la sesión se lanza el subagente de research: es la única excepción a “un ticket por sesión”.</p>
+        </section>
+
+        <section>
+          <h2>El mapa al terminar la sesión 1</h2>
+          <span class="archivo">ejemplo/evolucion/map-al-cartografiar.md</span>
+          <pre class="md envolver"><code class="markdown" data-incluir="ejemplo/evolucion/map-al-cartografiar.md"></code></pre>
+          <aside class="notes">Decisions so far vacío. Siete tickets abiertos que no aparecen en el mapa: se consultan en issues/.</aside>
+        </section>
+
+        <section>
+          <h2>Sesión 4 · Avanzar un ticket</h2>
+          <div class="dos-col">
+            <ol class="pasos">
+              <li><span>Frontera: “¿Tiempo real o asincrónico?” y “Conversaciones al reiniciar”. Gana el primero por número.</span></li>
+              <li><span><code>Status: claimed</code> antes de trabajar.</span></li>
+              <li><span>Grilling con los <b>hechos</b> del research: WebSocket pide ASGI + Redis; SSE retiene workers; polling corre con lo que hay.</span></li>
+              <li><span>Decisión: <b>polling cada 15 s</b> con la Conversación abierta. ADR 0002.</span></li>
+              <li class="destacado"><span>“Medir Channels” se <b>invalida</b>. “No leídos” <b>se gradúa</b> de la niebla.</span></li>
+            </ol>
+            <div>
+              <span class="archivo">04-tiempo-real-o-asincronico.md</span>
+              <pre class="chico envolver"><code class="markdown" data-incluir="ejemplo/.scratch/conversaciones-alumno-docente/issues/04-tiempo-real-o-asincronico.md"></code></pre>
+            </div>
+          </div>
+          <aside class="notes">Transcripción completa en ejemplo/sesion-4-ticket-04.md. El humano no elige el ticket: lo elige la frontera.</aside>
+        </section>
+
+        <section>
+          <h2>Cómo se movió la frontera</h2>
+          <div class="grafo">
+            <div class="col-tit">resueltos</div><div class="col-tit">frontera</div><div class="col-tit">en curso</div><div class="col-tit">cerrados sin decidir</div>
+            <div class="ticket resuelto"><b>02 Opciones de transporte</b><small>research · s1</small></div>
+            <div class="ticket frontera"><b>05 Cómo se ve una Conversación</b><small>prototype</small></div>
+            <div class="ticket reclamado"><b>09 Mensajes no leídos</b><small>grilling · graduado en s4</small></div>
+            <div class="ticket invalidado"><b>06 Medir Channels en Compose</b><small>task · invalidado por 04</small></div>
+            <div class="ticket resuelto"><b>01 Quién puede escribir y leer</b><small>grilling · s2</small></div>
+            <div class="ticket frontera"><b>08 Conversaciones al reiniciar la demo</b><small>grilling · graduado en s3</small></div>
+            <div></div>
+            <div class="ticket fuera"><b>07 Anuncios a todos los inscriptos</b><small>grilling · fuera de alcance</small></div>
+            <div class="ticket resuelto"><b>03 Ciclo de vida</b><small>grilling · s3</small></div>
+            <div class="niebla-caja" style="grid-column: 2 / span 3">🌫️ Moderación · cómo se prueba el refresco · límites</div>
+            <div class="ticket resuelto"><b>04 ¿Tiempo real o asincrónico?</b><small>grilling · s4 · ADR 0002</small></div>
+          </div>
+          <div class="leyenda">
+            <span class="l-resuelto">resuelto</span><span class="l-frontera">frontera</span><span class="l-reclamado">reclamado</span><span class="l-niebla">niebla</span>
+          </div>
+          <aside class="notes">
+            Comparar con la slide de la frontera de la sección 2. Dos tickets nacieron de la niebla (08, 09), uno se
+            invalidó (06) y uno quedó fuera de alcance (07).
+          </aside>
+        </section>
+
+        <section>
+          <h2>El mapa hoy</h2>
+          <span class="archivo">ejemplo/.scratch/conversaciones-alumno-docente/map.md</span>
+          <pre class="md envolver"><code class="markdown" data-incluir="ejemplo/.scratch/conversaciones-alumno-docente/map.md"></code></pre>
+          <aside class="notes">Decisions so far: cuatro líneas con gist y link. El detalle está en cada ticket.</aside>
+        </section>
+
+        <section>
+          <h2>Cuando se despeja la niebla</h2>
+          <div class="mapa" style="margin-top: 0.6em">
+            <span class="nodo lleno" style="grid-column: 1 / span 3; grid-row: 1">mapa despejado<small>frontera vacía, sin niebla</small></span>
+            <span class="fl" style="grid-column: 4; grid-row: 1">→</span>
+            <span class="nodo principal" style="grid-column: 5 / span 2; grid-row: 1">to-spec<small>colapsa las decisiones</small></span>
+            <span class="fl" style="grid-column: 7; grid-row: 1">→</span>
+            <span class="nodo principal" style="grid-column: 8 / span 2; grid-row: 1">to-tickets<small>rebanadas</small></span>
+            <span class="fl" style="grid-column: 10; grid-row: 1">→</span>
+            <span class="nodo principal" style="grid-column: 11; grid-row: 1">implement</span>
+          </div>
+          <div class="tres-col" style="margin-top: 1em">
+            <div class="tarjeta fragment"><h3>Lo que recibe /to-spec</h3>El mapa + los tickets enlazados + ADR + glosario: decisiones con su porqué.</div>
+            <div class="tarjeta gris fragment"><h3>Lo que no hace</h3>Volver a entrevistar. Lo decidido ya está escrito.</div>
+            <div class="tarjeta alerta fragment"><h3>El atajo que duele</h3>Ir del mapa a <span class="cmd-skill">/implement</span> tira el detalle enlazado. Solo si resultó chico.</div>
+          </div>
+        </section>
+
+        <!-- ================= 6 · BENEFICIOS Y COSTOS ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="6 · Beneficios y costos">
+          <div style="margin-top: 150px">
+            <div class="numero">6</div>
+            <h2>Beneficios y costos</h2>
+          </div>
+        </section>
+
+        <section>
+          <h2>¿Vale la pena?</h2>
+          <div class="dos-col">
+            <div class="tarjeta" style="border-top-color: var(--verde)">
+              <h3>Beneficios</h3>
+              <ul class="checks">
+                <li>Cada sesión arranca limpia y en la <b>smart zone</b>.</li>
+                <li>El estado vive en el tracker, no en la cabeza ni en el chat.</li>
+                <li>Se puede repartir: varias personas, tickets en paralelo.</li>
+                <li>Obliga a separar hechos (research) de decisiones (grilling).</li>
+                <li>Lo descartado queda escrito con su porqué.</li>
+              </ul>
+            </div>
+            <div class="tarjeta gris">
+              <h3>Costos</h3>
+              <ul class="checks mal">
+                <li>Lento y denso: “el flujo más exigente” según Matt.</li>
+                <li>Mucha disciplina con el tracker: reclamar, cerrar, cablear.</li>
+                <li>Tentación de construir antes de tiempo.</li>
+                <li>Inútil (y caro) para una feature bien acotada.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 7 · EN VIVO Y PRÁCTICA ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="7 · En vivo y práctica">
+          <div style="margin-top: 150px">
+            <div class="numero">7</div>
+            <h2>Ahora de verdad</h2>
+            <p>El docente cartografía en vivo; después cada grupo avanza un ticket.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Corrida en vivo (20 min)</h2>
+          <div class="terminal">
+            <div class="barra"><i></i><i></i><i></i><span>matt-skills/wayfinder/demo</span></div>
+            <div class="cuerpo"><div class="comentario"># sesión 1: cartografiar (las respuestas las da la clase, a mano alzada)</div><div class="cmd">/wayfinder Queremos un chat entre alumnos y docentes en la demo de inscripciones.</div><div class="comentario fragment"># al terminar: ventana limpia y una sesión por ticket</div><div class="cmd fragment">/clear</div><div class="cmd fragment">/wayfinder .scratch/&lt;esfuerzo&gt;/map.md</div></div>
+          </div>
+          <div class="tres-col fragment" style="margin-top: 0.5em">
+            <div class="tarjeta"><h3>Mirar</h3>¿Qué preguntas hizo para el destino? ¿Cuáles fueron tickets y cuáles niebla?</div>
+            <div class="tarjeta"><h3>Comparar</h3>Con <code>ejemplo/</code>: el mapa real <b>va a ser distinto</b>, y está bien.</div>
+            <div class="tarjeta"><h3>Vigilar</h3>Que no responda sus propias preguntas ni empiece a programar.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Práctica en grupos (25 min)</h2>
+          <div>
+            <ol class="pasos" style="font-size: 0.7em">
+              <li><span>Cada grupo copia <code>wayfinder/demo</code> con el mapa que salió en vivo.</span></li>
+              <li><span>Abre una sesión <b>nueva</b> y corre <code>/wayfinder .scratch/&lt;esfuerzo&gt;/map.md</code>: el agente elige el ticket de la frontera.</span></li>
+              <li><span>Lo resuelve según su tipo. Si es grilling, <b>las respuestas son del grupo</b>.</span></li>
+              <li><span>Revisa qué cambió en el mapa: ¿se graduó niebla? ¿se invalidó o descartó algo?</span></li>
+            </ol>
+          </div>
+          <div class="dos-col" style="margin-top: 0.6em">
+            <div class="tarjeta"><h3>📦 Entregable</h3>El <code>map.md</code> y los tickets tocados, con el comentario de resolución.</div>
+            <div class="tarjeta gris"><h3>💬 Reflexión (3–5 líneas)</h3>¿Qué decisión tomaron distinto al ejemplo? ¿Qué pasó a niebla o a fuera de alcance, y por qué?</div>
+          </div>
+        </section>
+
+        <!-- ================= CIERRE ================= -->
+        <section class="seccion" data-background-color="#BE1C1D" data-state="fondo-rojo" data-titulo="Cierre">
+          <div style="margin-top: 110px">
+            <p class="frase" style="color: #fff; font-size: 1.6em">
+              No se carga contra el destino.<br />Se <u>encuentra el camino</u>, una decisión por vez.
+            </p>
+            <div class="dos-col" style="margin-top: 1.4em; font-size: 0.7em">
+              <div>
+                <b>Para seguir</b><br />
+                <code>github.com/mattpocock/skills</code> · <code>skills/engineering/wayfinder</code><br />
+                <span class="cmd-skill">/ask-matt</span> si no sabés qué skill usar
+              </div>
+              <div>
+                <b>En este repo</b><br />
+                <code>wayfinder/ejemplo/</code>: el caso simulado<br />
+                <code>wayfinder/demo/</code>: punto de partida para la corrida real
+              </div>
+            </div>
+            <h2 style="margin-top: 1em">¿Preguntas?</h2>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="pie">
+      <img src="../../slides/assets/logo-untdf.svg" alt="UNTDF" />
+      <span class="seccion-actual"></span>
+    </footer>
+
+    <script src="../../slides/vendor/reveal/reveal.js"></script>
+    <script src="../../slides/vendor/reveal/plugin/highlight.js"></script>
+    <script src="../../slides/vendor/reveal/plugin/notes.js"></script>
+    <script src="../../slides/vendor/reveal/plugin/zoom.js"></script>
+    <script>
+      Reveal.initialize({
+        width: 1280,
+        height: 720,
+        margin: 0.05,
+        center: false,
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes, RevealZoom],
+      })
+
+      // Callouts sincronizados con el paso actual del código
+      function sincronizar() {
+        const slide = Reveal.getCurrentSlide()
+        if (!slide || !slide.hasAttribute('data-sincronizar')) return
+        slide.querySelectorAll('.anatomia').forEach((grupo) => {
+          const pre = grupo.querySelector('pre code[data-line-numbers]')?.parentElement
+          if (!pre) return
+          // El primer resaltado no es un fragmento: el paso 1 se ve sin avanzar
+          const paso = pre.querySelectorAll('code.fragment.visible').length + 1
+          grupo.querySelectorAll('.callouts li[data-step]').forEach((li) => {
+            const n = Number(li.dataset.step)
+            li.classList.toggle('activo', n === paso)
+            li.classList.toggle('visto', n < paso)
+          })
+        })
+      }
+
+      // Nombre de la sección actual en el pie
+      function actualizarPie() {
+        const actual = Reveal.getIndices().h
+        let titulo = ''
+        document.querySelectorAll('.reveal .slides > section').forEach((s, i) => {
+          if (i <= actual && s.dataset.titulo) titulo = s.dataset.titulo
+        })
+        document.querySelector('.pie .seccion-actual').textContent = 'Wayfinder · ' + titulo
+      }
+
+      ;['ready', 'slidechanged', 'fragmentshown', 'fragmenthidden'].forEach((evento) =>
+        Reveal.on(evento, () => {
+          sincronizar()
+          actualizarPie()
+        }),
+      )
+    </script>
+  </body>
+</html>

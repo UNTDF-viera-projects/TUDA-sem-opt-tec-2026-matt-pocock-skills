@@ -1061,7 +1061,8 @@ code-review: Standards 1 hallazgo · Spec 0 hallazgos
         slide.querySelectorAll('.anatomia').forEach((grupo) => {
           const pre = grupo.querySelector('pre code[data-line-numbers]')?.parentElement
           if (!pre) return
-          const paso = pre.querySelectorAll('code.fragment.visible').length
+          // El primer resaltado no es un fragmento: el paso 1 se ve sin avanzar
+          const paso = pre.querySelectorAll('code.fragment.visible').length + 1
           grupo.querySelectorAll('.callouts li[data-step]').forEach((li) => {
             const n = Number(li.dataset.step)
             li.classList.toggle('activo', n === paso)
